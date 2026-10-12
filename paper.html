@@ -208,7 +208,10 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#sec-dedup" id="toc-sec-dedup" class="nav-link" data-scroll-target="#sec-dedup"><span class="header-section-number">4.1</span> Cleaning and the rural lens</a></li>
   <li><a href="#feature-selection" id="toc-feature-selection" class="nav-link" data-scroll-target="#feature-selection"><span class="header-section-number">4.2</span> Feature selection</a></li>
-  <li><a href="#multicollinearity" id="toc-multicollinearity" class="nav-link" data-scroll-target="#multicollinearity"><span class="header-section-number">4.3</span> Multicollinearity</a></li>
+  <li><a href="#multicollinearity" id="toc-multicollinearity" class="nav-link" data-scroll-target="#multicollinearity"><span class="header-section-number">4.3</span> Multicollinearity</a>
+  <ul class="collapse">
+  <li><a href="#pairwise-association-tests" id="toc-pairwise-association-tests" class="nav-link" data-scroll-target="#pairwise-association-tests"><span class="header-section-number">4.3.1</span> Pairwise association tests</a></li>
+  </ul></li>
   <li><a href="#feature-analysis" id="toc-feature-analysis" class="nav-link" data-scroll-target="#feature-analysis"><span class="header-section-number">4.4</span> Feature analysis</a></li>
   <li><a href="#the-final-model" id="toc-the-final-model" class="nav-link" data-scroll-target="#the-final-model"><span class="header-section-number">4.5</span> The final model</a></li>
   <li><a href="#which-factors-matter-most-on-rural-roads" id="toc-which-factors-matter-most-on-rural-roads" class="nav-link" data-scroll-target="#which-factors-matter-most-on-rural-roads"><span class="header-section-number">4.6</span> Which factors matter most on rural roads?</a></li>
@@ -976,17 +979,98 @@ Figure&nbsp;10: VIF: selected ten (left) vs.&nbsp;top ten by p-value without red
 </div>
 </div>
 </div>
+<section id="pairwise-association-tests" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="pairwise-association-tests"><span class="header-section-number">4.3.1</span> Pairwise association tests</h3>
+<p>As a pair-by-pair check, we also apply the two standard association tests. <strong>Pearson’s <span class="math inline">\(r\)</span></strong> is used for pairs of continuous or count variables. For pairs of categorical (yes/no) variables, we run a <strong>chi-square test</strong> on their contingency table and measure strength with <strong>Cramér’s V</strong>, <span class="math display">\[
+V = \sqrt{rac{\chi^2}{n\,(\min(r, c) - 1)}},
+\]</span> which for two yes/no variables equals <span class="math inline">\(|\phi|\)</span>. The two numbers answer different questions. The p-value tests the null hypothesis that the variables are <em>independent</em>: a small p-value means they <strong>are</strong> associated, and with hundreds of crashes even a weak link is significant. The strength (<span class="math inline">\(|r|\)</span> or V) decides redundancy: <strong>above 0.8, drop one of the pair; 0.7–0.8 is marginal; below 0.7, keep both.</strong></p>
+<p><em>Worked example.</em> For <code>AGGRESSIVE_DRIVING</code> × <code>ALCOHOL_RELATED</code>, alcohol crashes are less often aggressive than independence would predict: 14 observed vs.&nbsp;22.1 expected. <span class="math inline">\(\chi^2 = 6.65\)</span>, df = 1, p = 0.010, so the two are associated. But V = 0.10, a weak association, so both are kept.</p>
+<div id="tbl-assoc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-assoc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9: Pairwise association tests
+</figcaption>
+<div aria-describedby="tbl-assoc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Check</th>
+<th>Pairs tested</th>
+<th>Result</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pearson, continuous / count candidates</td>
+<td>91</td>
+<td>Only <code>VEHICLE_COUNT</code> × <code>TOTAL_UNITS</code> &gt; 0.8 (r = 0.97); none 0.7–0.8</td>
+<td>Neither is in the final ten</td>
+</tr>
+<tr class="even">
+<td>Chi-square, the ten selected features</td>
+<td>45</td>
+<td>19 pairs significant (p &lt; 0.05); largest V = 0.29</td>
+<td>Keep all ten</td>
+</tr>
+<tr class="odd">
+<td>Chi-square, related flags (section 5)</td>
+<td>9</td>
+<td>V &gt; 0.8 for drinking × alcohol (1.00), work zone × work-zone indicator (1.00), sudden deer × deer (0.99), pedestrian × vulnerable road user (0.92), drinking × impaired (0.88)</td>
+<td>One flag per pair kept at most (umbrella flags)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Of the 45 pairs, 24 have an expected cell count below 5, where the chi-square approximation is unreliable. For these pairs Fisher’s exact test <span class="citation" data-cites="fisher1922">(<a href="#ref-fisher1922" role="doc-biblioref">Fisher 1922</a>)</span> reaches the same conclusion at p &lt; 0.05 in 23 of 24 cases. The nested flags (<code>RUNNING_STOP_SIGN</code>, <code>RUNNING_RED_LT</code> ⊂ <code>AGGRESSIVE_DRIVING</code>) have low V (≈ 0.17) and were removed for <strong>nesting</strong>, not correlation: 100% of those crashes are already aggressive-driving crashes.</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-pearson" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pearson-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-pearson.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pearson-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Pearson correlation among continuous / count candidates (boxed: |r| &gt; 0.8).
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-cramers" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cramers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-cramers-v.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cramers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: Cramér’s V between the ten selected features.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="feature-analysis" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="feature-analysis"><span class="header-section-number">4.4</span> Feature analysis</h2>
-<p><a href="#fig-feature-rates" class="quarto-xref">Figure&nbsp;11</a> shows the severe-crash rate with and without each factor, for all crashes and for rural crashes. On rural roads, half of motorcycle crashes and 40% of speeding crashes were severe.</p>
+<p><a href="#fig-feature-rates" class="quarto-xref">Figure&nbsp;13</a> shows the severe-crash rate with and without each factor, for all crashes and for rural crashes. On rural roads, half of motorcycle crashes and 40% of speeding crashes were severe.</p>
 <div id="fig-feature-rates" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-feature-rates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="assets/figures/fig-rs-feature-rates.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-feature-rates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11: Severe-crash rate when each factor is present (colored) vs.&nbsp;absent (gray), all crashes and rural crashes.
+Figure&nbsp;13: Severe-crash rate when each factor is present (colored) vs.&nbsp;absent (gray), all crashes and rural crashes.
 </figcaption>
 </figure>
 </div>
@@ -1001,7 +1085,7 @@ Figure&nbsp;11: Severe-crash rate when each factor is present (colored) vs.&nbsp
 <div id="tbl-final-perf" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-final-perf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;9: Final model, cross-validated means over 100 test folds
+Table&nbsp;10: Final model, cross-validated means over 100 test folds
 </figcaption>
 <div aria-describedby="tbl-final-perf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1060,7 +1144,7 @@ Table&nbsp;9: Final model, cross-validated means over 100 test folds
 <img src="assets/figures/fig-rs-confusion.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;12: Confusion matrices: every crash scored once by a model that never saw it.
+Figure&nbsp;14: Confusion matrices: every crash scored once by a model that never saw it.
 </figcaption>
 </figure>
 </div>
@@ -1070,7 +1154,7 @@ Figure&nbsp;12: Confusion matrices: every crash scored once by a model that neve
 <img src="assets/figures/fig-rs-curves.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;13: ROC and precision–recall curves, and the precision/recall/F1 trade-off across thresholds.
+Figure&nbsp;15: ROC and precision–recall curves, and the precision/recall/F1 trade-off across thresholds.
 </figcaption>
 </figure>
 </div>
@@ -1078,7 +1162,7 @@ Figure&nbsp;13: ROC and precision–recall curves, and the precision/recall/F1 t
 <div id="tbl-alts" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-alts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;10: Selected model vs.&nbsp;alternatives
+Table&nbsp;11: Selected model vs.&nbsp;alternatives
 </figcaption>
 <div aria-describedby="tbl-alts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1129,14 +1213,14 @@ Table&nbsp;10: Selected model vs.&nbsp;alternatives
 </section>
 <section id="which-factors-matter-most-on-rural-roads" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="which-factors-matter-most-on-rural-roads"><span class="header-section-number">4.6</span> Which factors matter most on rural roads?</h2>
-<p>For interpretation, the ten-feature model is refitted on all crashes without class weights, keeping the mild penalty. 95% intervals come from 1,000 bootstrap resamples (<a href="#fig-or" class="quarto-xref">Figure&nbsp;14</a>). For the three zero-severe flags, the <em>direction</em> is certain (no resample puts them above 1), but their <em>size</em> is set mostly by the penalty.</p>
+<p>For interpretation, the ten-feature model is refitted on all crashes without class weights, keeping the mild penalty. 95% intervals come from 1,000 bootstrap resamples (<a href="#fig-or" class="quarto-xref">Figure&nbsp;16</a>). For the three zero-severe flags, the <em>direction</em> is certain (no resample puts them above 1), but their <em>size</em> is set mostly by the penalty.</p>
 <div id="fig-or" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-or-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="assets/figures/fig-rs-odds-ratios.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-or-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;14: Odds ratios with 95% bootstrap intervals.
+Figure&nbsp;16: Odds ratios with 95% bootstrap intervals.
 </figcaption>
 </figure>
 </div>
@@ -1149,7 +1233,7 @@ Figure&nbsp;14: Odds ratios with 95% bootstrap intervals.
 <img src="assets/figures/fig-rs-paf.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-paf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15: Estimated share of severe rural crashes attributable to each risk factor.
+Figure&nbsp;17: Estimated share of severe rural crashes attributable to each risk factor.
 </figcaption>
 </figure>
 </div>
