@@ -563,6 +563,44 @@ infinite VIF (@fig-vif).
 
 ![VIF: selected ten (left) vs. top ten by p-value without redundancy removal (right).](assets/figures/fig-rs-vif.png){#fig-vif}
 :::
+
+### Pairwise association tests
+
+As a pair-by-pair check, we also apply the two standard association tests. **Pearson's $r$** is used
+for pairs of continuous or count variables. For pairs of categorical (yes/no) variables, we run a
+**chi-square test** on their contingency table and measure strength with **Cramér's V**,
+$$
+V = \sqrt{rac{\chi^2}{n\,(\min(r, c) - 1)}},
+$$
+which for two yes/no variables equals $|\phi|$. The two numbers answer different questions. The
+p-value tests the null hypothesis that the variables are *independent*: a small p-value means they
+**are** associated, and with hundreds of crashes even a weak link is significant. The strength
+($|r|$ or V) decides redundancy: **above 0.8, drop one of the pair; 0.7–0.8 is marginal; below 0.7,
+keep both.**
+
+*Worked example.* For `AGGRESSIVE_DRIVING` × `ALCOHOL_RELATED`, alcohol crashes are less often
+aggressive than independence would predict: 14 observed vs. 22.1 expected. $\chi^2 = 6.65$, df = 1,
+p = 0.010, so the two are associated. But V = 0.10, a weak association, so both are kept.
+
+| Check | Pairs tested | Result | Decision |
+|---|---|---|---|
+| Pearson, continuous / count candidates | 91 | Only `VEHICLE_COUNT` × `TOTAL_UNITS` > 0.8 (r = 0.97); none 0.7–0.8 | Neither is in the final ten |
+| Chi-square, the ten selected features | 45 | 19 pairs significant (p < 0.05); largest V = 0.29 | Keep all ten |
+| Chi-square, related flags (section 5) | 9 | V > 0.8 for drinking × alcohol (1.00), work zone × work-zone indicator (1.00), sudden deer × deer (0.99), pedestrian × vulnerable road user (0.92), drinking × impaired (0.88) | One flag per pair kept at most (umbrella flags) |
+
+: Pairwise association tests {#tbl-assoc}
+
+Of the 45 pairs, 24 have an expected cell count below 5, where the chi-square approximation is
+unreliable. For these pairs Fisher's exact test [@fisher1922] reaches the same conclusion at
+p < 0.05 in 23 of 24 cases. The nested flags (`RUNNING_STOP_SIGN`, `RUNNING_RED_LT` ⊂
+`AGGRESSIVE_DRIVING`) have low V (≈ 0.17) and were removed for **nesting**, not correlation: 100% of
+those crashes are already aggressive-driving crashes.
+
+::: {layout-ncol=2}
+![Pearson correlation among continuous / count candidates (boxed: |r| > 0.8).](assets/figures/fig-rs-pearson.png){#fig-pearson}
+
+![Cramér's V between the ten selected features.](assets/figures/fig-rs-cramers-v.png){#fig-cramers}
+:::
 :::
 
 ::: {.content-visible when-format="revealjs"}
@@ -572,6 +610,22 @@ infinite VIF (@fig-vif).
 
 - All VIFs **< 1.25**; the largest correlation is 0.29 (darkness × impairment).
 - Without the redundancy step: identical columns (`ALCOHOL_RELATED` = `DRINKING_DRIVER`), **VIF = ∞**.
+
+## Association tests: Pearson and chi-square
+
+:::: columns
+::: {.column width="50%"}
+![](assets/figures/fig-rs-cramers-v.png)
+:::
+::: {.column width="50%"}
+- **p-value** = *is there any association?* (small p → associated).
+  **Strength** ($|r|$ or Cramér's V) = *is one redundant?* **> 0.8 drop one**, 0.7–0.8 marginal.
+- Aggressive driving × alcohol: p = 0.010 (associated) but **V = 0.10** → keep both.
+- Final ten: 19 of 45 pairs significant, **max V = 0.29** → keep all.
+- Pearson: only vehicle count × total units **r = 0.97** (neither selected).
+- Redundant flags removed in selection: **V = 0.88–1.00**.
+:::
+::::
 :::
 
 ::: {.content-hidden when-format="revealjs"}

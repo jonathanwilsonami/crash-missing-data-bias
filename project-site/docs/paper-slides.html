@@ -461,6 +461,21 @@ Jonathan Wilson
 <li>Without the redundancy step: identical columns (<code>ALCOHOL_RELATED</code> = <code>DRINKING_DRIVER</code>), <strong>VIF = ∞</strong>.</li>
 </ul>
 </section>
+<section id="association-tests-pearson-and-chi-square" class="slide level2">
+<h2>Association tests: Pearson and chi-square</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="assets/figures/fig-rs-cramers-v.png"></p>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><strong>p-value</strong> = <em>is there any association?</em> (small p → associated). <strong>Strength</strong> (<span class="math inline">\(|r|\)</span> or Cramér’s V) = <em>is one redundant?</em> <strong>&gt; 0.8 drop one</strong>, 0.7–0.8 marginal.</li>
+<li>Aggressive driving × alcohol: p = 0.010 (associated) but <strong>V = 0.10</strong> → keep both.</li>
+<li>Final ten: 19 of 45 pairs significant, <strong>max V = 0.29</strong> → keep all.</li>
+<li>Pearson: only vehicle count × total units <strong>r = 0.97</strong> (neither selected).</li>
+<li>Redundant flags removed in selection: <strong>V = 0.88–1.00</strong>.</li>
+</ul>
+</div></div>
+</section>
 <section id="feature-analysis-1" class="slide level2">
 <h2>Feature analysis</h2>
 
