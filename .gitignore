@@ -1,0 +1,5 @@
+treated_datasets/
+.~lock.*
+.ipynb_checkpoints/
+Crash_Data_Dictionary_2026.pdf
+traffic_case_study/*
