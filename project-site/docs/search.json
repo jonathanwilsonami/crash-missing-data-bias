@@ -1,0 +1,247 @@
+[
+  {
+    "objectID": "paper.html",
+    "href": "paper.html",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "",
+    "text": "NoteReproducibility\n\n\n\nEvery figure in this paper is produced by one of two executed notebooks: missing_data_analysis.ipynb (Part I) and rural_severity_model.ipynb (Part II). The script project-site/scripts/export_assets.py copies their figures into project-site/assets/. Key numbers quoted in the text are kept in _variables.yml."
+  },
+  {
+    "objectID": "paper.html#data-quality-findings",
+    "href": "paper.html#data-quality-findings",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "2.1 Data-quality findings",
+    "text": "2.1 Data-quality findings\n\nInconsistent names. The MAR file calls the hour column HOUR (MNAR: HOUR_OF_DAY), and the MNAR file’s worksheet is named MCAR_ex1. Both are harmonized on load.\nSpreadsheet debris. Rows 1000–1029 of features.xls have no outcome and at most two filled cells. They are removed.\nDuplicated crashes. LANE_COUNT and SPEED_LIMIT come from PennDOT’s ROADWAY table, which holds one row per road involved. When it is joined to the crash data, a crash on several roads appears several times. The 1,000 rows are only 679 distinct crashes (224 crashes appear 2–5 times; Section 4.1). This matters for any model evaluated by cross-validation.\nUndocumented codes. URBAN_RURAL = 4 (421 crashes) is not defined in the dictionary (only 1–3 are), and URBAN_AREA is not documented at all. The RURAL flag, which equals URBAN_RURAL = 1 exactly, is used instead.\nOutliers. PERSON_COUNT = 48 is a genuine school-bus crash and is kept. PERSON_COUNT = 0 is implausible for a reportable crash and is flagged. HOUR_OF_DAY and SPEED_LIMIT contain no out-of-range values.\n\n\n\n\n\n\n\nFigure 1: PERSON_COUNT outliers. The 48-person value is a real school-bus crash; values of 0 are implausible."
+  },
+  {
+    "objectID": "paper.html#missingness-mechanisms",
+    "href": "paper.html#missingness-mechanisms",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "3.1 Missingness mechanisms",
+    "text": "3.1 Missingness mechanisms\nLet \\(R\\) indicate which values are observed, and split the data into observed and missing parts, \\(Y = (Y_{\\text{obs}}, Y_{\\text{mis}})\\). Following Rubin (1976) and Little and Rubin (2019):\n\\[\n\\begin{aligned}\n\\text{MCAR:}\\quad & P(R \\mid Y_{\\text{obs}}, Y_{\\text{mis}}) = P(R) \\\\\n\\text{MAR:}\\quad  & P(R \\mid Y_{\\text{obs}}, Y_{\\text{mis}}) = P(R \\mid Y_{\\text{obs}}) \\\\\n\\text{MNAR:}\\quad & P(R \\mid Y_{\\text{obs}}, Y_{\\text{mis}}) \\text{ depends on } Y_{\\text{mis}}\n\\end{aligned}\n\\]\nUnder MAR, missingness may depend on variables we can see (including the outcome) but not on the hidden value itself. MNAR cannot be detected from observed data alone, because the evidence is exactly what is missing. We can test it here only because the hidden values can be recovered (Section 3.2).\nTable 2 summarizes the gaps. Only WET_ROAD, YOUNG_DRIVER and PERSON_COUNT are affected, and PERSON_COUNT is missing in the same 69 rows in both files. The two files differ in the shape of missingness. In MAR the gaps are scattered, so 38.5% of rows have at least one. In MNAR, WET_ROAD and YOUNG_DRIVER are always missing together (224 rows with both, 10 with all three), so more cells are missing (537 vs. 453) but fewer rows are affected (29.3%).\n\n\n\nTable 2: Missing values by file\n\n\n\n\n\nVariable\nMAR missing\nMNAR missing\n\n\n\n\nWET_ROAD\n184 (18.4%)\n234 (23.4%)\n\n\nYOUNG_DRIVER\n200 (20.0%)\n234 (23.4%)\n\n\nPERSON_COUNT\n69 (6.9%)\n69 (6.9%)\n\n\nRows with any gap\n385 (38.5%)\n293 (29.3%)\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: Left and center: missingness maps (dark = missing). Right: fatal/serious-injury rate among rows where each variable is missing vs. observed.\n\n\n\nRows with WET_ROAD missing have a higher fatal/serious-injury rate in both files: 7.6% vs. 4.5% under MAR and 7.3% vs. 4.4% under MNAR (Fisher’s exact test (Fisher 1922), p ≈ 0.10 and 0.09). Dropping those rows will therefore remove severe crashes, even under MAR."
+  },
+  {
+    "objectID": "paper.html#sec-reference",
+    "href": "paper.html#sec-reference",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "3.2 A best-available truth",
+    "text": "3.2 A best-available truth\nThe MAR file, the MNAR file and the first 1,000 rows of features.xls agree on every cell observed in more than one of them (0 disagreements out of 5,172–5,547 shared cells). Because each hides different cells, combining them recovers the true value of most gaps. The remaining 44 WET_ROAD and 49 YOUNG_DRIVER cells are missing in all three files. We derive them from always-complete source fields, using the data dictionary:\n\n\n\nTable 3: Derivation rules for the last unrecoverable cells\n\n\n\n\n\n\n\n\n\n\n\nFlag\nDerivation rule\nBasis\nAgreement with known values\n\n\n\n\nWET_ROAD\nROAD_CONDITION ∈ {08 Water, 09 Wet}\nLearned from data; codes from dictionary\n956 / 956 (100%)\n\n\nYOUNG_DRIVER\nany of DRIVER_COUNT_16YR…_20YR &gt; 0\nDictionary definition (“at least 1 driver age 16–20”)\n948 / 951 (99.7%)\n\n\n\n\n\n\nThe three YOUNG_DRIVER conflicts (rows 623, 624, 913) are inconsistencies within the source data: the flag is 1 while every 16–20 driver count is 0. The result is a complete 1,000-row reference. About 99% of its cells are recorded values and the rest are rule-derived. Every “bias” below is distance from this reference.\nDirect MNAR check. With the hidden values known, we compare them with the observed ones. We then test whether a cell’s true value predicts that it is missing after controlling for the always-observed variables (a logistic regression of the missingness indicator on the true value, SPEEDING, HOUR_OF_DAY and the outcome).\n\n\n\nTable 4: Hidden vs. observed values. Raw p from Fisher’s exact test (flags) or Mann–Whitney (Mann and Whitney 1947) (count)\n\n\n\n\n\n\n\n\n\n\n\n\n\nFile\nVariable\nTrue mean (hidden)\nMean (observed)\np (raw)\np (conditional)\n\n\n\n\nMAR\nWET_ROAD\n0.152\n0.143\n0.73\n0.77\n\n\nMAR\nYOUNG_DRIVER\n0.160\n0.180\n0.54\n0.50\n\n\nMNAR\nWET_ROAD\n0.184\n0.133\n0.06\n0.05\n\n\nMNAR\nYOUNG_DRIVER\n0.145\n0.185\n0.17\n0.17\n\n\nboth\nPERSON_COUNT\n2.68\n2.34\n0.06\n0.29\n\n\n\n\n\n\nThe MAR file behaves like MAR. In the MNAR file, wet roads were about 40% more common among hidden cells, and the effect holds after conditioning (p ≈ 0.05). YOUNG_DRIVER points the expected way but is not significant. The evidence supports the MNAR label but is borderline, not conclusive. Note also that the PERSON_COUNT gaps are not completely random, but they are largely explained by observed variables."
+  },
+  {
+    "objectID": "paper.html#treatments-and-their-effect-on-the-data",
+    "href": "paper.html#treatments-and-their-effect-on-the-data",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "3.3 Treatments and their effect on the data",
+    "text": "3.3 Treatments and their effect on the data\nEach file is treated three ways:\n\nmean imputation: replace each gap with the column mean;\nmedian imputation: replace each gap with the column median;\ncomplete-case (CC) removal: drop every row with any gap.\n\nFigure 3 and Figure 4 compare the original and treated distributions side by side, with the reference marked by black diamonds. Two artifacts are immediately visible. Mean imputation creates values that cannot occur (e.g. WET_ROAD = 0.13). Median imputation sets every missing yes/no value to “no”, because the median of a rare flag is 0.\n\n\n\n\n\n\nFigure 3: MAR: distribution of every variable, original vs. each treatment. ◆ = reference; hatched bars = imputed values; gray = missing.\n\n\n\n\n\n\n\n\n\nFigure 4: MNAR: the same comparison.\n\n\n\nFigure 5 summarizes the distortion of each variable’s mean.\n\nMean imputation reproduces the observed mean exactly. Under MAR that is nearly unbiased. Under MNAR it inherits the observed-data bias (wet roads −8%, young drivers +6%).\nMedian imputation understates wet roads by 19% (MAR) and 30% (MNAR), and young drivers by 18–19%.\nComplete-case removal keeps 615 (MAR) or 707 (MNAR) rows. It lowers the fatal/serious rate from 5.1% to 4.6% (MAR) and 4.4% (MNAR) because the removed rows were disproportionately severe. Under MAR it discards 23 of the 51 severe crashes.\n\n\n\n\n\n\n\nFigure 5: Percent difference of each variable’s mean from the reference, by treatment."
+  },
+  {
+    "objectID": "paper.html#logistic-regression-on-every-dataset",
+    "href": "paper.html#logistic-regression-on-every-dataset",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "3.4 Logistic regression on every dataset",
+    "text": "3.4 Logistic regression on every dataset\nWe fit \\[\n\\operatorname{logit} P(\\text{severe}) = \\beta_0 + \\beta_1\\,\\text{SPEEDING} + \\beta_2\\,\\text{WET\\_ROAD}\n+ \\beta_3\\,\\text{YOUNG\\_DRIVER} + \\beta_4\\,\\text{HOUR\\_OF\\_DAY} + \\beta_5\\,\\text{PERSON\\_COUNT}\n\\] on each treated dataset and on the reference (Hosmer, Lemeshow, and Sturdivant 2013). Because only 5.1% of crashes are severe, an unweighted model predicts “not severe” for everyone: 94.9% accuracy and F1 = 0. We therefore use balanced class weights, which trade accuracy for the ability to find severe crashes. Performance is estimated with stratified 5-fold cross-validation repeated 20 times. The original (untreated) files cannot be fitted directly; standard software silently drops incomplete rows, which is complete-case analysis.\nWe run two evaluations. In the first, each model is scored on its own treated data. In the second, a fair head-to-head, each model is trained on treated training rows (imputation statistics from those rows only) and scored on the true reference values of the same held-out rows (Table 5).\n\n\n\nTable 5: Fair head-to-head: trained on treated data, tested on true values (means over 100 folds; fold-to-fold sd ≈ 0.034 F1, 0.07 accuracy)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTreatment\nMAR F1\nMNAR F1\nMAR accuracy\nMNAR accuracy\nMAR AUC\nMNAR AUC\n\n\n\n\nMean\n0.085\n0.092\n0.614\n0.585\n0.517\n0.536\n\n\nMedian\n0.088\n0.095\n0.618\n0.586\n0.518\n0.540\n\n\nComplete case\n0.092\n0.099\n0.580\n0.639\n0.520\n0.541\n\n\nReference\n0.098\n0.098\n0.590\n0.590\n0.540\n0.540\n\n\n\n\n\n\nPredictive differences are smaller than the noise. F1 ranges from 0.085 to 0.099, against a fold-to-fold standard deviation of about 0.034, and ROC AUC sits at 0.52–0.54, barely above chance. With only SPEEDING statistically significant (odds ratio ≈ 4, p ≈ 0.007), the five predictors carry little signal. When scored on its own data, the MNAR complete-case model looks best (accuracy 0.646, F1 0.102, AUC 0.581). That is an illusion: it is tested only on the less severe rows that survived the MNAR filter.\nBias shows up in the coefficients. Figure 6 compares each treatment’s odds ratios with the reference. Table 6 reports the root-mean-square error of the coefficients on a per-standard-deviation scale, so all five predictors are comparable.\n\n\n\n\n\n\nFigure 6: Odds ratios by treatment (dots, 95% CI) vs. the reference (black line, gray band).\n\n\n\n\n\n\nTable 6: Coefficient bias vs. the reference (lower is better)\n\n\n\n\n\n\n\n\n\n\n\n\nTreatment\nMAR coef. RMSE\nMNAR coef. RMSE\nMAR CI width vs. ref.\nMNAR CI width vs. ref.\n\n\n\n\nMean\n0.062\n0.058\n1.01×\n1.04×\n\n\nMedian\n0.040\n0.059\n1.02×\n1.07×\n\n\nComplete case\n0.064\n0.110\n1.40×\n1.64×\n\n\n\n\n\n\nUnder MNAR, complete-case removal nearly doubles the coefficient error and inflates the speeding odds ratio from 4.0 to 7.5. It also widens confidence intervals by 40–64% because it discards data."
+  },
+  {
+    "objectID": "paper.html#part-i-findings",
+    "href": "paper.html#part-i-findings",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "3.5 Part I findings",
+    "text": "3.5 Part I findings\n\nComplete-case removal is the most biased treatment under both mechanisms, and markedly so under MNAR. The removed rows are systematically different (wetter roads, more severe crashes), so deleting them shifts the outcome rate, distorts coefficients and widens every interval.\nMean imputation is the least biased simple method overall. It preserves variable means (exactly, under MAR) and keeps coefficients close to the reference. It does create impossible fractional flag values and shrinks variance.\nMedian imputation should not be used for binary predictors. It silently recodes every gap as “no”, the largest distortion of the predictor distributions. Its coefficient error is similar to mean imputation.\nUnder MNAR, every simple treatment stays biased. A method that uses only observed values cannot know that the hidden roads were wetter.\nBetter than any imputation: recover the values from source fields (Table 3), or use multiple imputation with auxiliary variables and missingness indicators (Buuren and Groothuis-Oudshoorn 2011), plus a sensitivity analysis for MNAR."
+  },
+  {
+    "objectID": "paper.html#sec-dedup",
+    "href": "paper.html#sec-dedup",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "4.1 Cleaning and the rural lens",
+    "text": "4.1 Cleaning and the rural lens\nPart II uses all 80 columns of features.xls. Three cleaning steps matter:\n\nCollapse duplicated crashes. Consecutive rows that agree on every non-roadway column (at least 60 columns compared) are one crash. None of the merged crashes has a conflicting time of day, and 161 of them differ in SPEED_LIMIT/LANE_COUNT, as expected for multiple roads. Crash fields take the first non-missing value, and roadway fields take the maximum (the fastest road involved). This leaves 679 crashes, of which 36 are severe (5.3%). Without this step, copies of one crash would land in both training and test folds.\nRebuild calculated flags. WET_ROAD, YOUNG_DRIVER, DRIVER_20YR, DRIVER_50_64YR and MULTIPLE_VEHICLE are rebuilt from complete source fields (99.6–100% agreement with known values).\nDrop duplicate and undocumented columns (TIME_OF_DAY, ILLUMINATION, URBAN_RURAL, URBAN_AREA). Remaining gaps are mean-imputed inside each training fold.\n\n\n\n\n\n\n\nFigure 7: Rows per crash before deduplication.\n\n\n\nRural lens. Only 11 of 177 rural crashes were severe. A common guideline asks for about ten outcome events per predictor (Peduzzi et al. 1996), so ten features on rural crashes alone would be unstable. We therefore train on all crashes and apply the rural lens at every step: the filter is run on rural crashes separately, rural evidence enters the final selection, the model is evaluated on rural crashes alone, and conclusions are drawn for rural roads."
+  },
+  {
+    "objectID": "paper.html#feature-selection",
+    "href": "paper.html#feature-selection",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "4.2 Feature selection",
+    "text": "4.2 Feature selection\nStep 1: first principles. Crash severity is the energy that reaches a human body, relative to what that body can tolerate. Each column is assigned to a mechanism, or rejected:\n\n\n\nTable 7: First-principles screen (73 candidates kept)\n\n\n\n\n\n\n\n\n\n\nMechanism\nReasoning\nExamples\n\n\n\n\nEnergy / speed\nKinetic energy grows with speed²\nSPEEDING, SPEED_LIMIT\n\n\nUnprotected road user\nNo crash structure, belts or airbags\nMOTORCYCLE, PEDESTRIAN\n\n\nCrash geometry\nHead-on and side impacts: high closing speed, little crush space\nREAR_END, HEAD_ON, NON_COLLISION\n\n\nImpairment & behavior\nChanges speeds, reactions and crash types\nIMPAIRED_DRIVER, AGGRESSIVE_DRIVING\n\n\nFrailty / inexperience\nOlder bodies tolerate less force\nDRIVER_75PLUS, YOUNG_DRIVER\n\n\nEnvironment\nVisibility, speed and friction\nILLUMINATION_DARK, WET_ROAD\n\n\nRoad setting; vehicle mix\nSpeeds, conflicts, mass mismatch\nSTATE_ROAD, HEAVY_TRUCK_COUNT\n\n\n\n\n\n\nRejected columns: administrative and calendar fields (county, month, day of week), undocumented or duplicate codes, and AUTOMOBILE_COUNT (a proxy for vehicle mix with no mechanism of its own). RURAL is the analysis lens, not a predictor, because it is constant on rural roads. No remaining column records the outcome, so there is no leakage.\nStep 2: a simple filter. Each candidate is tested on its own, on all crashes and on rural crashes. For flags we report the risk ratio \\[\n\\text{RR} = \\frac{P(\\text{severe} \\mid \\text{flag} = 1)}{P(\\text{severe} \\mid \\text{flag} = 0)}\n\\] with Fisher’s exact test (Fisher 1922); numeric features use the Mann–Whitney test (Mann and Whitney 1947). A feature passes if it is exposed in at least 15 crashes and has p &lt; 0.20 in either group. The threshold is loose because this is screening, and with 36 events a strict cut-off would discard real effects.\n\n\n\n\n\n\nFigure 8: Risk ratios of the flags that pass the filter, all crashes (●) vs. rural crashes (■). Faded = p ≥ 0.20 in that group.\n\n\n\nStep 3: redundancy and the final pick. Several passing flags carry the same information. ALCOHOL_RELATED is identical to DRINKING_DRIVER, and both sit inside IMPAIRED_DRIVER. RUNNING_STOP_SIGN and RUNNING_RED_LT are entirely contained in AGGRESSIVE_DRIVING. SUDDEN_DEER ≈ DEER_RELATED. We keep the umbrella flag in each case. SPEEDING is also contained in AGGRESSIVE_DRIVING, but it is kept for its distinct energy mechanism and its strong signal. Combining filter rank, first-principles strength and rural evidence gives the final ten (Table 8). ILLUMINATION_DARK was chosen over LEFT_TURN, the next by overall p-value, because of its stronger rural signal and its core mechanism.\n\n\n\nTable 8: The ten selected features and their filter statistics\n\n\n\n\n\n\n\n\n\n\n\n\n\nFeature\nMechanism\nRR (all)\np (all)\nRR (rural)\np (rural)\n\n\n\n\nMOTORCYCLE\nUnprotected road user\n5.73\n0.001\n8.81\n0.024\n\n\nSPEEDING\nEnergy / speed\n4.12\n0.018\n7.64\n0.032\n\n\nAGGRESSIVE_DRIVING\nImpairment & behavior\n2.35\n0.016\n4.45\n0.057\n\n\nIMPAIRED_DRIVER\nImpairment & behavior\n2.36\n0.053\n3.06\n0.165\n\n\nDRIVER_75PLUS\nFrailty\n2.10\n0.117\n2.24\n0.260\n\n\nNON_COLLISION\nCrash geometry\n3.00\n0.084\n1.67\n0.483\n\n\nREAR_END\nCrash geometry\n0 severe of 127\n0.001\n0 of 19\n0.611\n\n\nDISTRACTED\nImpairment & behavior\n0 severe of 70\n0.042\n0 of 9\n1.000\n\n\nDEER_RELATED\nCrash geometry\n0 severe of 49\n0.100\n0 of 29\n0.215\n\n\nILLUMINATION_DARK\nEnvironment\n0.51\n0.165\n0 of 46\n0.069"
+  },
+  {
+    "objectID": "paper.html#multicollinearity",
+    "href": "paper.html#multicollinearity",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "4.3 Multicollinearity",
+    "text": "4.3 Multicollinearity\nThe largest pairwise correlation among the ten features is 0.29 (ILLUMINATION_DARK with IMPAIRED_DRIVER; impaired driving is mostly at night). Every variance inflation factor, \\(\\text{VIF}_j = 1/(1 - R_j^2)\\), is below 1.25, far from the usual warning levels of 5 and 10. By contrast, the top ten by p-value alone, without the redundancy step, contains identical columns with infinite VIF (Figure 10).\n\n\n\n\n\n\n\n\n\nFigure 9: Correlations among the selected features.\n\n\n\n\n\n\n\n\n\n\n\nFigure 10: VIF: selected ten (left) vs. top ten by p-value without redundancy removal (right)."
+  },
+  {
+    "objectID": "paper.html#feature-analysis",
+    "href": "paper.html#feature-analysis",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "4.4 Feature analysis",
+    "text": "4.4 Feature analysis\nFigure 11 shows the severe-crash rate with and without each factor, for all crashes and for rural crashes. On rural roads, half of motorcycle crashes and 40% of speeding crashes were severe.\n\n\n\n\n\n\nFigure 11: Severe-crash rate when each factor is present (colored) vs. absent (gray), all crashes and rural crashes.\n\n\n\nHow rural crashes differ. Deer strikes are four times as common in rural crashes (16% vs. 4%), and none of the 49 was severe. Non-collision events are 2.8× as common. Rear-end and distraction crashes are about half as common, which helps explain the higher rural severe rate (6.2% vs. 5.0%). The main risk factors (aggressive driving, impairment, speeding, drivers aged 75+) occur about as often on rural roads as elsewhere.\nWhy darkness looks protective. First principles say darkness should raise severity, yet dark crashes were severe less often (3.1% vs. 6.0%). The crash mix explains it: motorcycle crashes happen almost entirely in daylight (4.5% of daylight crashes vs. 0.7% of dark ones), and dark crashes are twice as often deer strikes. Darkness is a useful predictor here, but the association is not causal."
+  },
+  {
+    "objectID": "paper.html#the-final-model",
+    "href": "paper.html#the-final-model",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "4.5 The final model",
+    "text": "4.5 The final model\nModel. Logistic regression on the ten features, with mean imputation and standardization learned inside each training fold, balanced class weights and a mild L2 penalty. The penalty is needed because three features have zero severe crashes, which would push unpenalized coefficients to −∞ (complete separation; Firth (1993) discusses penalized alternatives).\nThreshold. The probability cut-off is tuned to maximize F1, where \\(F_1 = 2\\,\\text{precision}\\cdot\\text{recall}/(\\text{precision}+\\text{recall})\\). It is chosen by an inner cross-validation within each training fold, so the test fold never influences it (median threshold 0.75).\nEvaluation. Stratified 5-fold cross-validation repeated 20 times (100 test folds), reported for all crashes and for rural crashes alone.\n\n\n\nTable 9: Final model, cross-validated means over 100 test folds\n\n\n\n\n\n\n\n\n\n\n\n\n\nScope\nAccuracy\nPrecision\nRecall\nF1\nROC AUC\n\n\n\n\nAll crashes\n0.900\n0.228\n0.284\n0.225\n0.761\n\n\nRural crashes\n0.898\n0.322\n0.413\n0.304\n0.841\n\n\nAlways “not severe”\n0.947\n0\n0\n0\n0.500\n\n\n\n\n\n\nAccuracy is the wrong yardstick for a 5% outcome (Saito and Rehmsmeier 2015). The trivial model scores 94.7% and finds nothing. Our model gives up some accuracy to catch about 28% of severe crashes overall and 41% on rural roads. Roughly one in four of its “severe” flags is correct, 4–5× the base rate. It ranks crashes well, especially rural ones (AUC 0.84). Rural metrics are noisy: each rural test fold holds only about two severe crashes (F1 sd ≈ 0.25).\n\n\n\n\n\n\nFigure 12: Confusion matrices: every crash scored once by a model that never saw it.\n\n\n\n\n\n\n\n\n\nFigure 13: ROC and precision–recall curves, and the precision/recall/F1 trade-off across thresholds.\n\n\n\nIs this the best ten? Under the same folds, the selected ten outperform every alternative tested:\n\n\n\nTable 10: Selected model vs. alternatives\n\n\n\n\n\nFeature set\nF1 (all)\nF1 (rural)\nAUC (all)\nAUC (rural)\n\n\n\n\nAll 73 candidates\n0.111\n0.143\n0.645\n0.751\n\n\nTop 10 by p-value only\n0.159\n0.208\n0.709\n0.780\n\n\nSelected ten, darkness → left turn\n0.201\n0.239\n0.741\n0.789\n\n\nSelected ten\n0.225\n0.304\n0.761\n0.841\n\n\n\n\n\n\nThe selection used the full dataset, so the selected model’s scores are slightly optimistic for new data."
+  },
+  {
+    "objectID": "paper.html#which-factors-matter-most-on-rural-roads",
+    "href": "paper.html#which-factors-matter-most-on-rural-roads",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "4.6 Which factors matter most on rural roads?",
+    "text": "4.6 Which factors matter most on rural roads?\nFor interpretation, the ten-feature model is refitted on all crashes without class weights, keeping the mild penalty. 95% intervals come from 1,000 bootstrap resamples (Figure 14). For the three zero-severe flags, the direction is certain (no resample puts them above 1), but their size is set mostly by the penalty.\n\n\n\n\n\n\nFigure 14: Odds ratios with 95% bootstrap intervals.\n\n\n\nHow much a factor contributes to rural severe crashes depends on its odds ratio and on how often it occurs. The population attributable fraction (Miettinen 1974) among the severe rural cases is \\[\n\\text{PAF} = p_c \\,\\frac{\\text{OR} - 1}{\\text{OR}},\n\\] where \\(p_c\\) is the share of severe rural crashes with the factor.\n\n\n\n\n\n\nFigure 15: Estimated share of severe rural crashes attributable to each risk factor.\n\n\n\n\nAggressive driving contributes the most. It appears in about half of rural crashes and in 9 of the 11 severe ones, accounting for roughly a third of them (PAF ≈ 36%), despite a moderate odds ratio of 1.8.\nMotorcycles are the most dangerous single factor (OR ≈ 4.6, 95% CI 1.6–10.6), the only factor whose interval clearly excludes no effect.\nImpairment and speeding each raise the odds about 2.4× and account for about 10% of severe rural crashes each.\nDrivers aged 75+ and non-collision events each raise the odds about 1.8×. Non-collision events are 2.8× more common on rural roads.\nLow-risk rural crashes are deer strikes (common, never severe), and rear-end and distraction crashes (mostly non-rural)."
+  },
+  {
+    "objectID": "paper-slides.html#two-questions",
+    "href": "paper-slides.html#two-questions",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Two questions",
+    "text": "Two questions\n\nCrash databases are incomplete and messy. How we handle that changes the answer to “what makes a crash deadly?”\nPart I: missing data. On the same 1,000 crashes, missing at random (MAR) vs. not at random (MNAR): how do mean, median and complete-case treatments bias a logistic regression?\nPart II: rural severity. With first principles + a simple filter, which ten factors best predict fatal / serious-injury crashes, and which matter most on rural roads?\nOutcome: FATAL_OR_SUSP_SERIOUS_INJ, rare (≈ 5% of crashes).\n\nData: PennDOT crash records and data dictionary."
+  },
+  {
+    "objectID": "paper-slides.html#data-and-data-quality",
+    "href": "paper-slides.html#data-and-data-quality",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Data and data quality",
+    "text": "Data and data quality\n\n\n\nMAR_ex1.xls, MNAR_ex1.xls: the same 1,000 crashes, 6 columns, different gaps.\nfeatures.xls: 80 columns of crash, flag and roadway fields.\nThe 1,000 rows are only 679 crashes. The ROADWAY join repeats a crash once per road.\nURBAN_RURAL = 4 is undefined. PERSON_COUNT = 48 is a real school-bus crash; = 0 is implausible."
+  },
+  {
+    "objectID": "paper-slides.html#two-kinds-of-missingness",
+    "href": "paper-slides.html#two-kinds-of-missingness",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Two kinds of missingness",
+    "text": "Two kinds of missingness\n\n\n\nMAR: gaps depend only on what we can see. MNAR: gaps depend on the hidden value itself.\nMAR: scattered gaps → 38.5% of rows incomplete.\nMNAR: WET_ROAD and YOUNG_DRIVER vanish together → 29.3% of rows incomplete.\nRows missing WET_ROAD are more often severe (≈ 7.5% vs. 4.5%)."
+  },
+  {
+    "objectID": "paper-slides.html#rebuilding-the-truth-to-measure-bias",
+    "href": "paper-slides.html#rebuilding-the-truth-to-measure-bias",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Rebuilding the truth to measure bias",
+    "text": "Rebuilding the truth to measure bias\n\nThe three files never disagree where they overlap, and each hides different cells → combining them recovers most gaps.\nThe last 93 cells are derived from complete fields: WET_ROAD ← ROAD_CONDITION ∈ {08, 09} (100% agreement); YOUNG_DRIVER ← 16–20 driver counts (99.7%).\nDirect MNAR check (true hidden vs. observed values):\n\n\n\n\nFile\nVariable\nHidden\nObserved\np (conditional)\n\n\n\n\nMAR\nWET_ROAD\n0.152\n0.143\n0.77\n\n\nMNAR\nWET_ROAD\n0.184\n0.133\n0.05\n\n\nMNAR\nYOUNG_DRIVER\n0.145\n0.185\n0.17\n\n\n\n→ MNAR is supported, mainly by WET_ROAD, but the evidence is borderline."
+  },
+  {
+    "objectID": "paper-slides.html#side-by-side-original-vs.-treated-mnar",
+    "href": "paper-slides.html#side-by-side-original-vs.-treated-mnar",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Side-by-side: original vs. treated (MNAR)",
+    "text": "Side-by-side: original vs. treated (MNAR)"
+  },
+  {
+    "objectID": "paper-slides.html#which-treatments-distort-the-data",
+    "href": "paper-slides.html#which-treatments-distort-the-data",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Which treatments distort the data?",
+    "text": "Which treatments distort the data?\n\n\nMedian turns every missing yes/no into “no”: wet roads −19% (MAR), −30% (MNAR).\nComplete case drops severe crashes: fatal rate 5.1% → 4.4% (MNAR).\nMean is right under MAR but inherits the observed-data bias under MNAR."
+  },
+  {
+    "objectID": "paper-slides.html#accuracy-and-f1-barely-differ",
+    "href": "paper-slides.html#accuracy-and-f1-barely-differ",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Accuracy and F1 barely differ",
+    "text": "Accuracy and F1 barely differ\n\nNo weighting: 94.9% accuracy, F1 = 0 (the model predicts “not severe” for everyone). We use balanced class weights.\nFair test: train on treated data, test on true values of the same held-out rows:\n\n\n\n\nTreatment\nMAR F1\nMNAR F1\nMAR AUC\nMNAR AUC\n\n\n\n\nMean\n0.085\n0.092\n0.517\n0.536\n\n\nMedian\n0.088\n0.095\n0.518\n0.540\n\n\nComplete case\n0.092\n0.099\n0.520\n0.541\n\n\nReference\n0.098\n0.098\n0.540\n0.540\n\n\n\n\nDifferences are smaller than fold-to-fold noise (F1 sd ≈ 0.034). The predictors are weak (AUC ≈ 0.53)."
+  },
+  {
+    "objectID": "paper-slides.html#bias-shows-up-in-the-coefficients",
+    "href": "paper-slides.html#bias-shows-up-in-the-coefficients",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Bias shows up in the coefficients",
+    "text": "Bias shows up in the coefficients\n\n\n\n\n\n\nTreatment\nMAR RMSE\nMNAR RMSE\n\n\n\n\nMean\n0.062\n0.058\n\n\nMedian\n0.040\n0.059\n\n\nComplete case\n0.064\n0.110\n\n\n\n\n\nCoefficient error vs. the reference (per-SD scale).\nMNAR complete case: speeding OR 7.5 vs. 4.0; CIs 64% wider."
+  },
+  {
+    "objectID": "paper-slides.html#part-i-take-aways",
+    "href": "paper-slides.html#part-i-take-aways",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Part I take-aways",
+    "text": "Part I take-aways\n\nComplete case = most biased, especially under MNAR (drops severe crashes; ~2× coefficient error).\nMean imputation = least biased simple method (exact means under MAR).\nMedian imputation distorts yes/no variables (every gap becomes “no”).\nUnder MNAR, no simple method is unbiased.\nBest fix: recover values from source fields (ROAD_CONDITION, driver-age counts), or use multiple imputation."
+  },
+  {
+    "objectID": "paper-slides.html#cleaning-and-the-rural-lens",
+    "href": "paper-slides.html#cleaning-and-the-rural-lens",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Cleaning and the rural lens",
+    "text": "Cleaning and the rural lens\n\nDeduplicate: 1,000 rows → 679 crashes (36 severe, 5.3%). This prevents copies of one crash from appearing in both training and test folds.\nRebuild flags from complete source fields (99.6–100% agreement).\nRural lens: only 11 of 177 rural crashes were severe, too few for a 10-feature rural-only model (≈ 10 events per feature needed). So we train on all crashes, then filter, evaluate and interpret for rural roads."
+  },
+  {
+    "objectID": "paper-slides.html#feature-selection-first-principles-a-simple-filter",
+    "href": "paper-slides.html#feature-selection-first-principles-a-simple-filter",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Feature selection: first principles + a simple filter",
+    "text": "Feature selection: first principles + a simple filter\n\n\n\nFirst principles: keep columns with an injury mechanism (energy, unprotected user, crash geometry, impairment, frailty, environment). 73 candidates.\nFilter: Fisher’s exact test and risk ratio per flag, on all and rural crashes; pass if p &lt; 0.20 and ≥ 15 exposed.\nRedundancy: keep the umbrella flag (IMPAIRED_DRIVER ⊃ drinking/alcohol; AGGRESSIVE_DRIVING ⊃ stop-sign/red-light)."
+  },
+  {
+    "objectID": "paper-slides.html#the-proposed-ten-features",
+    "href": "paper-slides.html#the-proposed-ten-features",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "The proposed ten features",
+    "text": "The proposed ten features\n\n\n\n\n\n\n\n\n\nRaises severity\nRR (all / rural)\nLowers severity\nSevere crashes\n\n\n\n\nMOTORCYCLE\n5.7 / 8.8\nREAR_END\n0 of 127\n\n\nSPEEDING\n4.1 / 7.6\nDISTRACTED\n0 of 70\n\n\nAGGRESSIVE_DRIVING\n2.4 / 4.5\nDEER_RELATED\n0 of 49\n\n\nIMPAIRED_DRIVER\n2.4 / 3.1\nILLUMINATION_DARK\n5 of 163\n\n\nDRIVER_75PLUS\n2.1 / 2.2\n\n\n\n\nNON_COLLISION\n3.0 / 1.7"
+  },
+  {
+    "objectID": "paper-slides.html#no-multicollinearity",
+    "href": "paper-slides.html#no-multicollinearity",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "No multicollinearity",
+    "text": "No multicollinearity\n\n\nAll VIFs &lt; 1.25; the largest correlation is 0.29 (darkness × impairment).\nWithout the redundancy step: identical columns (ALCOHOL_RELATED = DRINKING_DRIVER), VIF = ∞."
+  },
+  {
+    "objectID": "paper-slides.html#feature-analysis-1",
+    "href": "paper-slides.html#feature-analysis-1",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Feature analysis",
+    "text": "Feature analysis\n\n\nRural: 50% of motorcycle crashes and 40% of speeding crashes were severe.\nDeer strikes: 4× more common on rural roads, never severe. Darkness looks protective only because of the crash mix (few motorcycles at night, more deer)."
+  },
+  {
+    "objectID": "paper-slides.html#final-model-performance",
+    "href": "paper-slides.html#final-model-performance",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Final model performance",
+    "text": "Final model performance\n\n\n\n\n\n\n\n\n\n\n\nScope\nAccuracy\nPrecision\nRecall\nF1\nROC AUC\n\n\n\n\nAll crashes\n0.900\n0.228\n0.284\n0.225\n0.761\n\n\nRural crashes\n0.898\n0.322\n0.413\n0.304\n0.841\n\n\nAlways “not severe”\n0.947\n0\n0\n0\n0.5\n\n\n\n\nL2-penalized logistic regression, balanced weights, F1-tuned threshold chosen inside each training fold.\nTrades accuracy for finding 28% (all) / 41% (rural) of severe crashes; 1 in 4 flags correct.\nBeats all 73 features (AUC 0.65) and the top 10 by p-value alone (AUC 0.71)."
+  },
+  {
+    "objectID": "paper-slides.html#where-the-model-succeeds-and-misses",
+    "href": "paper-slides.html#where-the-model-succeeds-and-misses",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Where the model succeeds and misses",
+    "text": "Where the model succeeds and misses"
+  },
+  {
+    "objectID": "paper-slides.html#what-drives-severe-rural-crashes",
+    "href": "paper-slides.html#what-drives-severe-rural-crashes",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "What drives severe rural crashes",
+    "text": "What drives severe rural crashes\n\n\n\n\n\n\n\nAggressive driving contributes the most (9 of 11 severe rural crashes; PAF ≈ 36%).\nMotorcycles are the most dangerous factor (OR ≈ 4.6); impairment and speeding ≈ 2.4×."
+  },
+  {
+    "objectID": "paper-slides.html#limitations",
+    "href": "paper-slides.html#limitations",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Limitations",
+    "text": "Limitations\n\nFew events: 36 severe crashes, 11 rural → wide intervals; only motorcycle clearly ≠ 1.\nDuplicates affect Part I too: the MAR/MNAR files share the repeated crashes, so absolute scores are inflated (the comparison between treatments is still fair).\nAssociation, not causation (darkness, zero-severe flags).\nMissing variables: seat belts, curves, two-lane head-on risk, distance to trauma care.\nFeatures selected on the full data → slightly optimistic scores."
+  },
+  {
+    "objectID": "paper-slides.html#take-aways",
+    "href": "paper-slides.html#take-aways",
+    "title": "Missing Data and Rural Crash Severity in Pennsylvania",
+    "section": "Take-aways",
+    "text": "Take-aways\n\nComplete-case removal is the most biased missing-data treatment, worst under MNAR. Prefer mean imputation over median for yes/no fields, and recover values from source fields when possible.\nAccuracy misleads for a 5% outcome: always report precision, recall, F1 and AUC.\nTen mechanism-driven features beat the full set and a purely statistical pick (rural AUC 0.84).\nOn rural roads: aggressive driving contributes the most severe crashes; motorcycles are the most dangerous; impairment and speeding each ≈ 2.4×.\nNext: multi-year data, seat-belt and road-geometry variables, and a rural-only model."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Crash Severity and Missing Data in Pennsylvania",
+    "section": "",
+    "text": "This project analyzes Pennsylvania Department of Transportation (PennDOT) crash records in two parts:"
+  },
+  {
+    "objectID": "index.html#read-the-analysis",
+    "href": "index.html#read-the-analysis",
+    "title": "Crash Severity and Missing Data in Pennsylvania",
+    "section": "Read the analysis",
+    "text": "Read the analysis\n\nPaper: methods, statistical tests and results for both parts.\nSlides: the key findings as a presentation, rendered from the same source.\nNotebooks: the executed analyses that produce every figure and table: Part I, missing-data treatments · Part II, rural severity model."
+  },
+  {
+    "objectID": "index.html#data",
+    "href": "index.html#data",
+    "title": "Crash Severity and Missing Data in Pennsylvania",
+    "section": "Data",
+    "text": "Data\nCrash records and the data dictionary come from the PennDOT Open Data Portal (crash data dictionary, version 06-26). The extracts used here (features.xls, MAR_ex1.xls, MNAR_ex1.xls) were provided for coursework.\nSource code and reproduction instructions: github.com/jonathanwilsonami/crash-missing-data-bias."
+  }
+]

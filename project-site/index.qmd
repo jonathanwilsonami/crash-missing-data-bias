@@ -1,0 +1,47 @@
+---
+title: "Crash Severity and Missing Data in Pennsylvania"
+subtitle: "How missing-data treatments bias a crash model, and which factors make rural crashes fatal or seriously injurious"
+author:
+  - "Jonathan Wilson"
+---
+
+This project analyzes Pennsylvania Department of Transportation (PennDOT) crash records in two parts:
+
+1. **Missing-data treatments.** The same {{< var md.n_rows >}} crashes come with gaps that are
+   *missing at random* (MAR) in one file and *missing not at random* (MNAR) in another. We compare
+   mean imputation, median imputation and complete-case removal against a reconstructed
+   "best-available truth", and measure how much each treatment biases a logistic regression.
+2. **Rural crash severity.** Using first principles and a simple statistical filter, we select ten
+   features and build a logistic regression that identifies crashes in which someone is killed or
+   seriously injured, interpreted for **rural roads**.
+
+::: {.callout-note}
+## Headline findings
+- **Complete-case removal is the most biased treatment**, especially under MNAR: it drops the more
+  severe crashes and roughly doubles coefficient error. Mean imputation is the least biased simple
+  method; median imputation turns every missing yes/no value into "no".
+- **On rural roads, aggressive driving contributes the most severe crashes** (present in 9 of 11),
+  while **motorcycles are the most dangerous single factor** (odds ×4.6). Impairment and speeding each
+  raise the odds about 2.4×. Deer strikes are four times more common on rural roads but were never severe.
+- The final 10-feature model reaches a rural ROC AUC of {{< var rs.auc_rural >}} and finds about
+  41% of severe rural crashes, from only {{< var rs.n_rural_severe >}} severe rural cases.
+:::
+
+![](assets/figures/fig-rs-odds-ratios.png){fig-alt="Odds ratios with 95% bootstrap intervals for the ten selected crash factors. Motorcycle, impaired driver and speeding raise the odds of a severe crash; rear-end, distracted, deer-related and dark conditions lower it."}
+
+## Read the analysis
+
+- **[Paper](paper.qmd)**: methods, statistical tests and results for both parts.
+- **[Slides](paper-slides.html)**: the key findings as a presentation, rendered from the same source.
+- **Notebooks**: the executed analyses that produce every figure and table:
+  [Part I, missing-data treatments](notebook-missing-data.html) ·
+  [Part II, rural severity model](notebook-rural-model.html).
+
+## Data
+
+Crash records and the data dictionary come from the PennDOT Open Data Portal (crash data dictionary,
+version 06-26). The extracts used here (`features.xls`, `MAR_ex1.xls`, `MNAR_ex1.xls`) were provided
+for coursework.
+
+Source code and reproduction instructions:
+[github.com/jonathanwilsonami/crash-missing-data-bias](https://github.com/jonathanwilsonami/crash-missing-data-bias).

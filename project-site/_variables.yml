@@ -1,0 +1,40 @@
+# Key numbers quoted in the paper, slides and home page.
+# Source: missing_data_analysis.ipynb (md) and rural_severity_model.ipynb (rs).
+md:
+  n_rows: "1,000"
+  n_fatal: 51
+  fatal_rate: "5.1%"
+  mar_any_missing: "38.5%"
+  mnar_any_missing: "29.3%"
+  mar_cc_rows: 615
+  mnar_cc_rows: 707
+  mar_cc_fatal: 28
+  mnar_cc_fatal: 31
+  wet_hidden: "18.4%"
+  wet_observed: "13.3%"
+  wet_p_cond: "0.05"
+  rmse_mar_mean: "0.062"
+  rmse_mar_median: "0.040"
+  rmse_mar_cc: "0.064"
+  rmse_mnar_mean: "0.058"
+  rmse_mnar_median: "0.059"
+  rmse_mnar_cc: "0.110"
+rs:
+  n_rows: "1,000"
+  n_crashes: 679
+  n_severe: 36
+  severe_rate: "5.3%"
+  n_rural: 177
+  n_rural_severe: 11
+  rural_rate: "6.2%"
+  acc_all: "0.900"
+  prec_all: "0.228"
+  rec_all: "0.284"
+  f1_all: "0.225"
+  auc_all: "0.761"
+  acc_rural: "0.898"
+  prec_rural: "0.322"
+  rec_rural: "0.413"
+  f1_rural: "0.304"
+  auc_rural: "0.841"
+  baseline_acc: "0.947"

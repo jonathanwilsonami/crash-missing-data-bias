@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jonathan Wilson">
+<meta name="dcterms.date" content="2026-10-12">
+
+<title>Missing Data and Rural Crash Severity in Pennsylvania – PA Crash Severity &amp; Missing Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ceaa104d35ef12004d771d89dac4dd97.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">PA Crash Severity &amp; Missing Data</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./paper.html" aria-current="page"> 
+<span class="menu-text">Paper</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./paper-slides.html"> 
+<span class="menu-text">Slides</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-notebooks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Notebooks</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-notebooks">    
+        <li>
+    <a class="dropdown-item" href="./notebook-missing-data.html">
+ <span class="dropdown-text">Part I: Missing-data treatments</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./notebook-rural-model.html">
+ <span class="dropdown-text">Part II: Rural severity model</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jonathanwilsonami/crash-missing-data-bias"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">2</span> Data</a>
+  <ul class="collapse">
+  <li><a href="#data-quality-findings" id="toc-data-quality-findings" class="nav-link" data-scroll-target="#data-quality-findings"><span class="header-section-number">2.1</span> Data-quality findings</a></li>
+  </ul></li>
+  <li><a href="#part-i-missing-data-treatments" id="toc-part-i-missing-data-treatments" class="nav-link" data-scroll-target="#part-i-missing-data-treatments"><span class="header-section-number">3</span> Part I: Missing-data treatments</a>
+  <ul class="collapse">
+  <li><a href="#missingness-mechanisms" id="toc-missingness-mechanisms" class="nav-link" data-scroll-target="#missingness-mechanisms"><span class="header-section-number">3.1</span> Missingness mechanisms</a></li>
+  <li><a href="#sec-reference" id="toc-sec-reference" class="nav-link" data-scroll-target="#sec-reference"><span class="header-section-number">3.2</span> A best-available truth</a></li>
+  <li><a href="#treatments-and-their-effect-on-the-data" id="toc-treatments-and-their-effect-on-the-data" class="nav-link" data-scroll-target="#treatments-and-their-effect-on-the-data"><span class="header-section-number">3.3</span> Treatments and their effect on the data</a></li>
+  <li><a href="#logistic-regression-on-every-dataset" id="toc-logistic-regression-on-every-dataset" class="nav-link" data-scroll-target="#logistic-regression-on-every-dataset"><span class="header-section-number">3.4</span> Logistic regression on every dataset</a></li>
+  <li><a href="#part-i-findings" id="toc-part-i-findings" class="nav-link" data-scroll-target="#part-i-findings"><span class="header-section-number">3.5</span> Part I findings</a></li>
+  </ul></li>
+  <li><a href="#part-ii-what-makes-a-rural-crash-severe" id="toc-part-ii-what-makes-a-rural-crash-severe" class="nav-link" data-scroll-target="#part-ii-what-makes-a-rural-crash-severe"><span class="header-section-number">4</span> Part II: What makes a rural crash severe?</a>
+  <ul class="collapse">
+  <li><a href="#sec-dedup" id="toc-sec-dedup" class="nav-link" data-scroll-target="#sec-dedup"><span class="header-section-number">4.1</span> Cleaning and the rural lens</a></li>
+  <li><a href="#feature-selection" id="toc-feature-selection" class="nav-link" data-scroll-target="#feature-selection"><span class="header-section-number">4.2</span> Feature selection</a></li>
+  <li><a href="#multicollinearity" id="toc-multicollinearity" class="nav-link" data-scroll-target="#multicollinearity"><span class="header-section-number">4.3</span> Multicollinearity</a></li>
+  <li><a href="#feature-analysis" id="toc-feature-analysis" class="nav-link" data-scroll-target="#feature-analysis"><span class="header-section-number">4.4</span> Feature analysis</a></li>
+  <li><a href="#the-final-model" id="toc-the-final-model" class="nav-link" data-scroll-target="#the-final-model"><span class="header-section-number">4.5</span> The final model</a></li>
+  <li><a href="#which-factors-matter-most-on-rural-roads" id="toc-which-factors-matter-most-on-rural-roads" class="nav-link" data-scroll-target="#which-factors-matter-most-on-rural-roads"><span class="header-section-number">4.6</span> Which factors matter most on rural roads?</a></li>
+  </ul></li>
+  <li><a href="#discussion-and-limitations" id="toc-discussion-and-limitations" class="nav-link" data-scroll-target="#discussion-and-limitations"><span class="header-section-number">5</span> Discussion and limitations</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">6</span> Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/jonathanwilsonami/crash-missing-data-bias/blob/main/paper.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/jonathanwilsonami/crash-missing-data-bias/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="paper-slides.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Missing Data and Rural Crash Severity in Pennsylvania</h1>
+<p class="subtitle lead">How missing-data treatments bias a crash-severity model, and which factors make rural crashes fatal or seriously injurious</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jonathan Wilson </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 12, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="block-title">Abstract</div>
+    <p>We analyze Pennsylvania Department of Transportation (PennDOT) crash records in two parts. <strong>Part I</strong> compares three common missing-data treatments (mean imputation, median imputation and complete-case removal) on two versions of the same 1,000 crashes: one with values missing at random (MAR) and one with values missing not at random (MNAR). Because the two files hide different cells, we reconstruct a complete “best-available truth” from them and from the full crash extract, which lets us measure bias directly instead of guessing at it. Complete-case removal is the most biased treatment under both mechanisms, and markedly so under MNAR. It discards disproportionately severe crashes, and its coefficient error is about twice that of imputation. Mean imputation is the least biased simple method. Median imputation distorts binary predictors by recoding every gap as “no”. Predictive accuracy and F1 barely differ between treatments, because the five available predictors are weak. <strong>Part II</strong> builds a ten-feature logistic regression for fatal or suspected-serious-injury crashes, interpreted for rural roads. After collapsing duplicated crash records (1,000 rows → 679 crashes), we select features with a first-principles screen, a univariate filter and a redundancy step. The final model reaches a cross-validated ROC AUC of 0.761 overall and 0.841 on rural crashes. Motorcycles are the most dangerous single factor (odds ratio ≈ 4.6); aggressive driving contributes the most severe rural crashes; impairment and speeding each raise the odds about 2.4×.</p>
+  </div>
+</div>
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Reproducibility
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Every figure in this paper is produced by one of two executed notebooks: <a href="notebook-missing-data.html"><code>missing_data_analysis.ipynb</code></a> (Part I) and <a href="notebook-rural-model.html"><code>rural_severity_model.ipynb</code></a> (Part II). The script <code>project-site/scripts/export_assets.py</code> copies their figures into <code>project-site/assets/</code>. Key numbers quoted in the text are kept in <code>_variables.yml</code>.</p>
+</div>
+</div>
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>Crash databases are the main evidence base for road-safety policy, and they are rarely complete. Fields go unrecorded, reports are filled in partially, and records are joined across tables in ways that duplicate them. How an analyst handles these problems can change the answer to the question that matters most: <strong>what makes a crash deadly?</strong></p>
+<p>This paper addresses two questions with PennDOT crash data <span class="citation" data-cites="penndot2026">(<a href="#ref-penndot2026" role="doc-biblioref">Pennsylvania Department of Transportation 2026</a>)</span>:</p>
+<ol type="1">
+<li><strong>Missing data (Part I).</strong> When predictors are missing, how do mean imputation, median imputation and complete-case removal change the data and a logistic regression fitted to it? Does the answer depend on whether values are missing at random (MAR) or not at random (MNAR)?</li>
+<li><strong>Rural crash severity (Part II).</strong> Using a first-principles approach combined with a simple filter, which ten factors best predict crashes in which someone is killed or seriously injured, and which of them contribute most on <strong>rural roads</strong>?</li>
+</ol>
+<p>The outcome throughout is <code>FATAL_OR_SUSP_SERIOUS_INJ</code>: the crash had at least one person killed or with a suspected serious injury. It is rare, about 5% of crashes, which shapes every modeling choice below.</p>
+</section>
+<section id="data" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Data</h1>
+<p>Three extracts are used, all row-aligned to the same crashes:</p>
+<div id="tbl-files" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-files-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Data extracts
+</figcaption>
+<div aria-describedby="tbl-files-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Rows</th>
+<th>Columns</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>MAR_ex1.xls</code></td>
+<td>1,000</td>
+<td>6</td>
+<td>Part I: predictors missing at random</td>
+</tr>
+<tr class="even">
+<td><code>MNAR_ex1.xls</code></td>
+<td>1,000</td>
+<td>6</td>
+<td>Part I: predictors missing not at random</td>
+</tr>
+<tr class="odd">
+<td><code>features.xls</code></td>
+<td>1,030</td>
+<td>80</td>
+<td>Part I reference; Part II modeling</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The six Part I variables are <code>SPEEDING</code>, <code>WET_ROAD</code>, <code>YOUNG_DRIVER</code> (0/1 flags), <code>HOUR_OF_DAY</code> (0–23), <code>PERSON_COUNT</code>, and the outcome. <code>features.xls</code> adds 74 more crash, flag and roadway fields, documented in the PennDOT data dictionary <span class="citation" data-cites="penndot2026">(<a href="#ref-penndot2026" role="doc-biblioref">Pennsylvania Department of Transportation 2026</a>)</span>.</p>
+<section id="data-quality-findings" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="data-quality-findings"><span class="header-section-number">2.1</span> Data-quality findings</h2>
+<ul>
+<li><strong>Inconsistent names.</strong> The MAR file calls the hour column <code>HOUR</code> (MNAR: <code>HOUR_OF_DAY</code>), and the MNAR file’s worksheet is named <code>MCAR_ex1</code>. Both are harmonized on load.</li>
+<li><strong>Spreadsheet debris.</strong> Rows 1000–1029 of <code>features.xls</code> have no outcome and at most two filled cells. They are removed.</li>
+<li><strong>Duplicated crashes.</strong> <code>LANE_COUNT</code> and <code>SPEED_LIMIT</code> come from PennDOT’s ROADWAY table, which holds one row per road involved. When it is joined to the crash data, a crash on several roads appears several times. The 1,000 rows are only <strong>679 distinct crashes</strong> (224 crashes appear 2–5 times; <a href="#sec-dedup" class="quarto-xref">Section&nbsp;4.1</a>). This matters for any model evaluated by cross-validation.</li>
+<li><strong>Undocumented codes.</strong> <code>URBAN_RURAL = 4</code> (421 crashes) is not defined in the dictionary (only 1–3 are), and <code>URBAN_AREA</code> is not documented at all. The <code>RURAL</code> flag, which equals <code>URBAN_RURAL = 1</code> exactly, is used instead.</li>
+<li><strong>Outliers.</strong> <code>PERSON_COUNT = 48</code> is a genuine school-bus crash and is kept. <code>PERSON_COUNT = 0</code> is implausible for a reportable crash and is flagged. <code>HOUR_OF_DAY</code> and <code>SPEED_LIMIT</code> contain no out-of-range values.</li>
+</ul>
+<div id="fig-outliers" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-outliers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-md-outliers.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-outliers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: <code>PERSON_COUNT</code> outliers. The 48-person value is a real school-bus crash; values of 0 are implausible.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="part-i-missing-data-treatments" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Part I: Missing-data treatments</h1>
+<section id="missingness-mechanisms" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="missingness-mechanisms"><span class="header-section-number">3.1</span> Missingness mechanisms</h2>
+<p>Let <span class="math inline">\(R\)</span> indicate which values are observed, and split the data into observed and missing parts, <span class="math inline">\(Y = (Y_{\text{obs}}, Y_{\text{mis}})\)</span>. Following <span class="citation" data-cites="rubin1976">Rubin (<a href="#ref-rubin1976" role="doc-biblioref">1976</a>)</span> and <span class="citation" data-cites="littlerubin2019">Little and Rubin (<a href="#ref-littlerubin2019" role="doc-biblioref">2019</a>)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{MCAR:}\quad &amp; P(R \mid Y_{\text{obs}}, Y_{\text{mis}}) = P(R) \\
+\text{MAR:}\quad  &amp; P(R \mid Y_{\text{obs}}, Y_{\text{mis}}) = P(R \mid Y_{\text{obs}}) \\
+\text{MNAR:}\quad &amp; P(R \mid Y_{\text{obs}}, Y_{\text{mis}}) \text{ depends on } Y_{\text{mis}}
+\end{aligned}
+\]</span></p>
+<p>Under MAR, missingness may depend on variables we <em>can</em> see (including the outcome) but not on the hidden value itself. MNAR cannot be detected from observed data alone, because the evidence is exactly what is missing. We can test it here only because the hidden values can be recovered (<a href="#sec-reference" class="quarto-xref">Section&nbsp;3.2</a>).</p>
+<p><a href="#tbl-missing" class="quarto-xref">Table&nbsp;2</a> summarizes the gaps. Only <code>WET_ROAD</code>, <code>YOUNG_DRIVER</code> and <code>PERSON_COUNT</code> are affected, and <code>PERSON_COUNT</code> is missing in the same 69 rows in both files. The two files differ in the <em>shape</em> of missingness. In MAR the gaps are scattered, so 38.5% of rows have at least one. In MNAR, <code>WET_ROAD</code> and <code>YOUNG_DRIVER</code> are always missing <strong>together</strong> (224 rows with both, 10 with all three), so more cells are missing (537 vs.&nbsp;453) but fewer rows are affected (29.3%).</p>
+<div id="tbl-missing" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Missing values by file
+</figcaption>
+<div aria-describedby="tbl-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>MAR missing</th>
+<th>MNAR missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WET_ROAD</code></td>
+<td>184 (18.4%)</td>
+<td>234 (23.4%)</td>
+</tr>
+<tr class="even">
+<td><code>YOUNG_DRIVER</code></td>
+<td>200 (20.0%)</td>
+<td>234 (23.4%)</td>
+</tr>
+<tr class="odd">
+<td><code>PERSON_COUNT</code></td>
+<td>69 (6.9%)</td>
+<td>69 (6.9%)</td>
+</tr>
+<tr class="even">
+<td><strong>Rows with any gap</strong></td>
+<td><strong>385 (38.5%)</strong></td>
+<td><strong>293 (29.3%)</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div id="fig-missingness" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-missingness-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-md-missingness.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-missingness-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Left and center: missingness maps (dark = missing). Right: fatal/serious-injury rate among rows where each variable is missing vs.&nbsp;observed.
+</figcaption>
+</figure>
+</div>
+<p>Rows with <code>WET_ROAD</code> missing have a higher fatal/serious-injury rate in both files: 7.6% vs.&nbsp;4.5% under MAR and 7.3% vs.&nbsp;4.4% under MNAR (Fisher’s exact test <span class="citation" data-cites="fisher1922">(<a href="#ref-fisher1922" role="doc-biblioref">Fisher 1922</a>)</span>, p ≈ 0.10 and 0.09). Dropping those rows will therefore remove severe crashes, even under MAR.</p>
+</section>
+<section id="sec-reference" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="sec-reference"><span class="header-section-number">3.2</span> A best-available truth</h2>
+<p>The MAR file, the MNAR file and the first 1,000 rows of <code>features.xls</code> agree on <strong>every</strong> cell observed in more than one of them (0 disagreements out of 5,172–5,547 shared cells). Because each hides different cells, combining them recovers the true value of most gaps. The remaining 44 <code>WET_ROAD</code> and 49 <code>YOUNG_DRIVER</code> cells are missing in all three files. We derive them from always-complete source fields, using the data dictionary:</p>
+<div id="tbl-derive" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-derive-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Derivation rules for the last unrecoverable cells
+</figcaption>
+<div aria-describedby="tbl-derive-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Flag</th>
+<th>Derivation rule</th>
+<th>Basis</th>
+<th>Agreement with known values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WET_ROAD</code></td>
+<td><code>ROAD_CONDITION</code> ∈ {08 Water, 09 Wet}</td>
+<td>Learned from data; codes from dictionary</td>
+<td>956 / 956 (100%)</td>
+</tr>
+<tr class="even">
+<td><code>YOUNG_DRIVER</code></td>
+<td>any of <code>DRIVER_COUNT_16YR</code>…<code>_20YR</code> &gt; 0</td>
+<td>Dictionary definition (“at least 1 driver age 16–20”)</td>
+<td>948 / 951 (99.7%)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The three <code>YOUNG_DRIVER</code> conflicts (rows 623, 624, 913) are inconsistencies within the source data: the flag is 1 while every 16–20 driver count is 0. The result is a complete 1,000-row <strong>reference</strong>. About 99% of its cells are recorded values and the rest are rule-derived. Every “bias” below is distance from this reference.</p>
+<p><strong>Direct MNAR check.</strong> With the hidden values known, we compare them with the observed ones. We then test whether a cell’s true value predicts that it is missing after controlling for the always-observed variables (a logistic regression of the missingness indicator on the true value, <code>SPEEDING</code>, <code>HOUR_OF_DAY</code> and the outcome).</p>
+<div id="tbl-hidden" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hidden-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Hidden vs.&nbsp;observed values. Raw p from Fisher’s exact test (flags) or Mann–Whitney <span class="citation" data-cites="mann1947">(<a href="#ref-mann1947" role="doc-biblioref">Mann and Whitney 1947</a>)</span> (count)
+</figcaption>
+<div aria-describedby="tbl-hidden-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Variable</th>
+<th>True mean (hidden)</th>
+<th>Mean (observed)</th>
+<th>p (raw)</th>
+<th>p (conditional)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MAR</td>
+<td><code>WET_ROAD</code></td>
+<td>0.152</td>
+<td>0.143</td>
+<td>0.73</td>
+<td>0.77</td>
+</tr>
+<tr class="even">
+<td>MAR</td>
+<td><code>YOUNG_DRIVER</code></td>
+<td>0.160</td>
+<td>0.180</td>
+<td>0.54</td>
+<td>0.50</td>
+</tr>
+<tr class="odd">
+<td>MNAR</td>
+<td><code>WET_ROAD</code></td>
+<td><strong>0.184</strong></td>
+<td>0.133</td>
+<td>0.06</td>
+<td><strong>0.05</strong></td>
+</tr>
+<tr class="even">
+<td>MNAR</td>
+<td><code>YOUNG_DRIVER</code></td>
+<td>0.145</td>
+<td>0.185</td>
+<td>0.17</td>
+<td>0.17</td>
+</tr>
+<tr class="odd">
+<td>both</td>
+<td><code>PERSON_COUNT</code></td>
+<td>2.68</td>
+<td>2.34</td>
+<td>0.06</td>
+<td>0.29</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The MAR file behaves like MAR. In the MNAR file, wet roads were about 40% more common among hidden cells, and the effect holds after conditioning (p ≈ 0.05). <code>YOUNG_DRIVER</code> points the expected way but is not significant. The evidence supports the MNAR label but is borderline, not conclusive. Note also that the <code>PERSON_COUNT</code> gaps are not completely random, but they are largely explained by observed variables.</p>
+</section>
+<section id="treatments-and-their-effect-on-the-data" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="treatments-and-their-effect-on-the-data"><span class="header-section-number">3.3</span> Treatments and their effect on the data</h2>
+<p>Each file is treated three ways:</p>
+<ul>
+<li><strong>mean imputation:</strong> replace each gap with the column mean;</li>
+<li><strong>median imputation:</strong> replace each gap with the column median;</li>
+<li><strong>complete-case (CC) removal:</strong> drop every row with any gap.</li>
+</ul>
+<p><a href="#fig-hist-mar" class="quarto-xref">Figure&nbsp;3</a> and <a href="#fig-hist-mnar" class="quarto-xref">Figure&nbsp;4</a> compare the original and treated distributions side by side, with the reference marked by black diamonds. Two artifacts are immediately visible. Mean imputation creates values that cannot occur (e.g.&nbsp;<code>WET_ROAD = 0.13</code>). Median imputation sets every missing yes/no value to “no”, because the median of a rare flag is 0.</p>
+<div id="fig-hist-mar" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-mar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-md-hist-mar.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-mar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: MAR: distribution of every variable, original vs.&nbsp;each treatment. ◆ = reference; hatched bars = imputed values; gray = missing.
+</figcaption>
+</figure>
+</div>
+<div id="fig-hist-mnar" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-mnar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-md-hist-mnar.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-mnar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: MNAR: the same comparison.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-mean-bias" class="quarto-xref">Figure&nbsp;5</a> summarizes the distortion of each variable’s mean.</p>
+<ul>
+<li><strong>Mean imputation</strong> reproduces the observed mean exactly. Under MAR that is nearly unbiased. Under MNAR it inherits the observed-data bias (wet roads −8%, young drivers +6%).</li>
+<li><strong>Median imputation</strong> understates wet roads by 19% (MAR) and 30% (MNAR), and young drivers by 18–19%.</li>
+<li><strong>Complete-case removal</strong> keeps 615 (MAR) or 707 (MNAR) rows. It lowers the fatal/serious rate from 5.1% to 4.6% (MAR) and 4.4% (MNAR) because the removed rows were disproportionately severe. Under MAR it discards 23 of the 51 severe crashes.</li>
+</ul>
+<div id="fig-mean-bias" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mean-bias-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-md-mean-bias.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mean-bias-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Percent difference of each variable’s mean from the reference, by treatment.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="logistic-regression-on-every-dataset" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="logistic-regression-on-every-dataset"><span class="header-section-number">3.4</span> Logistic regression on every dataset</h2>
+<p>We fit <span class="math display">\[
+\operatorname{logit} P(\text{severe}) = \beta_0 + \beta_1\,\text{SPEEDING} + \beta_2\,\text{WET\_ROAD}
++ \beta_3\,\text{YOUNG\_DRIVER} + \beta_4\,\text{HOUR\_OF\_DAY} + \beta_5\,\text{PERSON\_COUNT}
+\]</span> on each treated dataset and on the reference <span class="citation" data-cites="hosmer2013">(<a href="#ref-hosmer2013" role="doc-biblioref">Hosmer, Lemeshow, and Sturdivant 2013</a>)</span>. Because only 5.1% of crashes are severe, an unweighted model predicts “not severe” for everyone: <strong>94.9% accuracy and F1 = 0</strong>. We therefore use balanced class weights, which trade accuracy for the ability to find severe crashes. Performance is estimated with stratified 5-fold cross-validation repeated 20 times. The original (untreated) files cannot be fitted directly; standard software silently drops incomplete rows, which <em>is</em> complete-case analysis.</p>
+<p>We run two evaluations. In the first, each model is scored on its own treated data. In the second, a <strong>fair head-to-head</strong>, each model is trained on treated training rows (imputation statistics from those rows only) and scored on the <strong>true reference values</strong> of the same held-out rows (<a href="#tbl-perf" class="quarto-xref">Table&nbsp;5</a>).</p>
+<div id="tbl-perf" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-perf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Fair head-to-head: trained on treated data, tested on true values (means over 100 folds; fold-to-fold sd ≈ 0.034 F1, 0.07 accuracy)
+</figcaption>
+<div aria-describedby="tbl-perf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Treatment</th>
+<th>MAR F1</th>
+<th>MNAR F1</th>
+<th>MAR accuracy</th>
+<th>MNAR accuracy</th>
+<th>MAR AUC</th>
+<th>MNAR AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mean</td>
+<td>0.085</td>
+<td>0.092</td>
+<td>0.614</td>
+<td>0.585</td>
+<td>0.517</td>
+<td>0.536</td>
+</tr>
+<tr class="even">
+<td>Median</td>
+<td>0.088</td>
+<td>0.095</td>
+<td>0.618</td>
+<td>0.586</td>
+<td>0.518</td>
+<td>0.540</td>
+</tr>
+<tr class="odd">
+<td>Complete case</td>
+<td>0.092</td>
+<td>0.099</td>
+<td>0.580</td>
+<td>0.639</td>
+<td>0.520</td>
+<td>0.541</td>
+</tr>
+<tr class="even">
+<td>Reference</td>
+<td>0.098</td>
+<td>0.098</td>
+<td>0.590</td>
+<td>0.590</td>
+<td>0.540</td>
+<td>0.540</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><strong>Predictive differences are smaller than the noise.</strong> F1 ranges from 0.085 to 0.099, against a fold-to-fold standard deviation of about 0.034, and ROC AUC sits at 0.52–0.54, barely above chance. With only <code>SPEEDING</code> statistically significant (odds ratio ≈ 4, p ≈ 0.007), the five predictors carry little signal. When scored on its own data, the MNAR complete-case model looks best (accuracy 0.646, F1 0.102, AUC 0.581). That is an illusion: it is tested only on the less severe rows that survived the MNAR filter.</p>
+<p><strong>Bias shows up in the coefficients.</strong> <a href="#fig-md-or" class="quarto-xref">Figure&nbsp;6</a> compares each treatment’s odds ratios with the reference. <a href="#tbl-bias" class="quarto-xref">Table&nbsp;6</a> reports the root-mean-square error of the coefficients on a per-standard-deviation scale, so all five predictors are comparable.</p>
+<div id="fig-md-or" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-md-or-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-md-odds-ratios.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-md-or-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Odds ratios by treatment (dots, 95% CI) vs.&nbsp;the reference (black line, gray band).
+</figcaption>
+</figure>
+</div>
+<div id="tbl-bias" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-bias-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: Coefficient bias vs.&nbsp;the reference (lower is better)
+</figcaption>
+<div aria-describedby="tbl-bias-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Treatment</th>
+<th>MAR coef. RMSE</th>
+<th>MNAR coef. RMSE</th>
+<th>MAR CI width vs.&nbsp;ref.</th>
+<th>MNAR CI width vs.&nbsp;ref.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mean</td>
+<td><p>0.062</p></td>
+<td><p>0.058</p></td>
+<td>1.01×</td>
+<td>1.04×</td>
+</tr>
+<tr class="even">
+<td>Median</td>
+<td><p>0.040</p></td>
+<td><p>0.059</p></td>
+<td>1.02×</td>
+<td>1.07×</td>
+</tr>
+<tr class="odd">
+<td>Complete case</td>
+<td><p>0.064</p></td>
+<td><strong>0.110</strong></td>
+<td>1.40×</td>
+<td><strong>1.64×</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Under MNAR, complete-case removal nearly doubles the coefficient error and inflates the speeding odds ratio from 4.0 to 7.5. It also widens confidence intervals by 40–64% because it discards data.</p>
+</section>
+<section id="part-i-findings" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="part-i-findings"><span class="header-section-number">3.5</span> Part I findings</h2>
+<ol type="1">
+<li><strong>Complete-case removal is the most biased treatment under both mechanisms, and markedly so under MNAR.</strong> The removed rows are systematically different (wetter roads, more severe crashes), so deleting them shifts the outcome rate, distorts coefficients and widens every interval.</li>
+<li><strong>Mean imputation is the least biased simple method overall.</strong> It preserves variable means (exactly, under MAR) and keeps coefficients close to the reference. It does create impossible fractional flag values and shrinks variance.</li>
+<li><strong>Median imputation should not be used for binary predictors.</strong> It silently recodes every gap as “no”, the largest distortion of the predictor distributions. Its coefficient error is similar to mean imputation.</li>
+<li><strong>Under MNAR, every simple treatment stays biased.</strong> A method that uses only observed values cannot know that the hidden roads were wetter.</li>
+<li><strong>Better than any imputation:</strong> recover the values from source fields (<a href="#tbl-derive" class="quarto-xref">Table&nbsp;3</a>), or use multiple imputation with auxiliary variables and missingness indicators <span class="citation" data-cites="vanbuuren2011">(<a href="#ref-vanbuuren2011" role="doc-biblioref">Buuren and Groothuis-Oudshoorn 2011</a>)</span>, plus a sensitivity analysis for MNAR.</li>
+</ol>
+</section>
+</section>
+<section id="part-ii-what-makes-a-rural-crash-severe" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Part II: What makes a rural crash severe?</h1>
+<section id="sec-dedup" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sec-dedup"><span class="header-section-number">4.1</span> Cleaning and the rural lens</h2>
+<p>Part II uses all 80 columns of <code>features.xls</code>. Three cleaning steps matter:</p>
+<ol type="1">
+<li><strong>Collapse duplicated crashes.</strong> Consecutive rows that agree on every non-roadway column (at least 60 columns compared) are one crash. None of the merged crashes has a conflicting time of day, and 161 of them differ in <code>SPEED_LIMIT</code>/<code>LANE_COUNT</code>, as expected for multiple roads. Crash fields take the first non-missing value, and roadway fields take the maximum (the fastest road involved). This leaves <strong>679 crashes</strong>, of which 36 are severe (5.3%). Without this step, copies of one crash would land in both training and test folds.</li>
+<li><strong>Rebuild calculated flags.</strong> <code>WET_ROAD</code>, <code>YOUNG_DRIVER</code>, <code>DRIVER_20YR</code>, <code>DRIVER_50_64YR</code> and <code>MULTIPLE_VEHICLE</code> are rebuilt from complete source fields (99.6–100% agreement with known values).</li>
+<li><strong>Drop duplicate and undocumented columns</strong> (<code>TIME_OF_DAY</code>, <code>ILLUMINATION</code>, <code>URBAN_RURAL</code>, <code>URBAN_AREA</code>). Remaining gaps are mean-imputed inside each training fold.</li>
+</ol>
+<div id="fig-dedup" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dedup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-dedup.png" class="img-fluid figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dedup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Rows per crash before deduplication.
+</figcaption>
+</figure>
+</div>
+<p><strong>Rural lens.</strong> Only 11 of 177 rural crashes were severe. A common guideline asks for about ten outcome events per predictor <span class="citation" data-cites="peduzzi1996">(<a href="#ref-peduzzi1996" role="doc-biblioref">Peduzzi et al. 1996</a>)</span>, so ten features on rural crashes alone would be unstable. We therefore train on all crashes and apply the rural lens at every step: the filter is run on rural crashes separately, rural evidence enters the final selection, the model is evaluated on rural crashes alone, and conclusions are drawn for rural roads.</p>
+</section>
+<section id="feature-selection" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="feature-selection"><span class="header-section-number">4.2</span> Feature selection</h2>
+<p><strong>Step 1: first principles.</strong> Crash severity is the energy that reaches a human body, relative to what that body can tolerate. Each column is assigned to a mechanism, or rejected:</p>
+<div id="tbl-mech" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mech-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7: First-principles screen (73 candidates kept)
+</figcaption>
+<div aria-describedby="tbl-mech-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mechanism</th>
+<th>Reasoning</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Energy / speed</td>
+<td>Kinetic energy grows with speed²</td>
+<td><code>SPEEDING</code>, <code>SPEED_LIMIT</code></td>
+</tr>
+<tr class="even">
+<td>Unprotected road user</td>
+<td>No crash structure, belts or airbags</td>
+<td><code>MOTORCYCLE</code>, <code>PEDESTRIAN</code></td>
+</tr>
+<tr class="odd">
+<td>Crash geometry</td>
+<td>Head-on and side impacts: high closing speed, little crush space</td>
+<td><code>REAR_END</code>, <code>HEAD_ON</code>, <code>NON_COLLISION</code></td>
+</tr>
+<tr class="even">
+<td>Impairment &amp; behavior</td>
+<td>Changes speeds, reactions and crash types</td>
+<td><code>IMPAIRED_DRIVER</code>, <code>AGGRESSIVE_DRIVING</code></td>
+</tr>
+<tr class="odd">
+<td>Frailty / inexperience</td>
+<td>Older bodies tolerate less force</td>
+<td><code>DRIVER_75PLUS</code>, <code>YOUNG_DRIVER</code></td>
+</tr>
+<tr class="even">
+<td>Environment</td>
+<td>Visibility, speed and friction</td>
+<td><code>ILLUMINATION_DARK</code>, <code>WET_ROAD</code></td>
+</tr>
+<tr class="odd">
+<td>Road setting; vehicle mix</td>
+<td>Speeds, conflicts, mass mismatch</td>
+<td><code>STATE_ROAD</code>, <code>HEAVY_TRUCK_COUNT</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Rejected columns: administrative and calendar fields (county, month, day of week), undocumented or duplicate codes, and <code>AUTOMOBILE_COUNT</code> (a proxy for vehicle mix with no mechanism of its own). <code>RURAL</code> is the analysis lens, not a predictor, because it is constant on rural roads. No remaining column records the outcome, so there is no leakage.</p>
+<p><strong>Step 2: a simple filter.</strong> Each candidate is tested on its own, on all crashes and on rural crashes. For flags we report the risk ratio <span class="math display">\[
+\text{RR} = \frac{P(\text{severe} \mid \text{flag} = 1)}{P(\text{severe} \mid \text{flag} = 0)}
+\]</span> with Fisher’s exact test <span class="citation" data-cites="fisher1922">(<a href="#ref-fisher1922" role="doc-biblioref">Fisher 1922</a>)</span>; numeric features use the Mann–Whitney test <span class="citation" data-cites="mann1947">(<a href="#ref-mann1947" role="doc-biblioref">Mann and Whitney 1947</a>)</span>. A feature passes if it is exposed in at least 15 crashes and has p &lt; 0.20 in either group. The threshold is loose because this is screening, and with 36 events a strict cut-off would discard real effects.</p>
+<div id="fig-filter" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-filter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-filter.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-filter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Risk ratios of the flags that pass the filter, all crashes (●) vs.&nbsp;rural crashes (■). Faded = p ≥ 0.20 in that group.
+</figcaption>
+</figure>
+</div>
+<p><strong>Step 3: redundancy and the final pick.</strong> Several passing flags carry the same information. <code>ALCOHOL_RELATED</code> is identical to <code>DRINKING_DRIVER</code>, and both sit inside <code>IMPAIRED_DRIVER</code>. <code>RUNNING_STOP_SIGN</code> and <code>RUNNING_RED_LT</code> are entirely contained in <code>AGGRESSIVE_DRIVING</code>. <code>SUDDEN_DEER</code> ≈ <code>DEER_RELATED</code>. We keep the umbrella flag in each case. <code>SPEEDING</code> is also contained in <code>AGGRESSIVE_DRIVING</code>, but it is kept for its distinct energy mechanism and its strong signal. Combining filter rank, first-principles strength and rural evidence gives the final ten (<a href="#tbl-final" class="quarto-xref">Table&nbsp;8</a>). <code>ILLUMINATION_DARK</code> was chosen over <code>LEFT_TURN</code>, the next by overall p-value, because of its stronger rural signal and its core mechanism.</p>
+<div id="tbl-final" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-final-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8: The ten selected features and their filter statistics
+</figcaption>
+<div aria-describedby="tbl-final-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Mechanism</th>
+<th>RR (all)</th>
+<th>p (all)</th>
+<th>RR (rural)</th>
+<th>p (rural)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>MOTORCYCLE</code></td>
+<td>Unprotected road user</td>
+<td>5.73</td>
+<td>0.001</td>
+<td>8.81</td>
+<td>0.024</td>
+</tr>
+<tr class="even">
+<td><code>SPEEDING</code></td>
+<td>Energy / speed</td>
+<td>4.12</td>
+<td>0.018</td>
+<td>7.64</td>
+<td>0.032</td>
+</tr>
+<tr class="odd">
+<td><code>AGGRESSIVE_DRIVING</code></td>
+<td>Impairment &amp; behavior</td>
+<td>2.35</td>
+<td>0.016</td>
+<td>4.45</td>
+<td>0.057</td>
+</tr>
+<tr class="even">
+<td><code>IMPAIRED_DRIVER</code></td>
+<td>Impairment &amp; behavior</td>
+<td>2.36</td>
+<td>0.053</td>
+<td>3.06</td>
+<td>0.165</td>
+</tr>
+<tr class="odd">
+<td><code>DRIVER_75PLUS</code></td>
+<td>Frailty</td>
+<td>2.10</td>
+<td>0.117</td>
+<td>2.24</td>
+<td>0.260</td>
+</tr>
+<tr class="even">
+<td><code>NON_COLLISION</code></td>
+<td>Crash geometry</td>
+<td>3.00</td>
+<td>0.084</td>
+<td>1.67</td>
+<td>0.483</td>
+</tr>
+<tr class="odd">
+<td><code>REAR_END</code></td>
+<td>Crash geometry</td>
+<td>0 severe of 127</td>
+<td>0.001</td>
+<td>0 of 19</td>
+<td>0.611</td>
+</tr>
+<tr class="even">
+<td><code>DISTRACTED</code></td>
+<td>Impairment &amp; behavior</td>
+<td>0 severe of 70</td>
+<td>0.042</td>
+<td>0 of 9</td>
+<td>1.000</td>
+</tr>
+<tr class="odd">
+<td><code>DEER_RELATED</code></td>
+<td>Crash geometry</td>
+<td>0 severe of 49</td>
+<td>0.100</td>
+<td>0 of 29</td>
+<td>0.215</td>
+</tr>
+<tr class="even">
+<td><code>ILLUMINATION_DARK</code></td>
+<td>Environment</td>
+<td>0.51</td>
+<td>0.165</td>
+<td>0 of 46</td>
+<td>0.069</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="multicollinearity" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="multicollinearity"><span class="header-section-number">4.3</span> Multicollinearity</h2>
+<p>The largest pairwise correlation among the ten features is 0.29 (<code>ILLUMINATION_DARK</code> with <code>IMPAIRED_DRIVER</code>; impaired driving is mostly at night). Every variance inflation factor, <span class="math inline">\(\text{VIF}_j = 1/(1 - R_j^2)\)</span>, is below 1.25, far from the usual warning levels of 5 and 10. By contrast, the top ten by p-value alone, without the redundancy step, contains identical columns with infinite VIF (<a href="#fig-vif" class="quarto-xref">Figure&nbsp;10</a>).</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-corr" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-corr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-corr.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Correlations among the selected features.
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-vif" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-vif-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-vif.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vif-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: VIF: selected ten (left) vs.&nbsp;top ten by p-value without redundancy removal (right).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="feature-analysis" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="feature-analysis"><span class="header-section-number">4.4</span> Feature analysis</h2>
+<p><a href="#fig-feature-rates" class="quarto-xref">Figure&nbsp;11</a> shows the severe-crash rate with and without each factor, for all crashes and for rural crashes. On rural roads, half of motorcycle crashes and 40% of speeding crashes were severe.</p>
+<div id="fig-feature-rates" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-feature-rates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-feature-rates.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-feature-rates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Severe-crash rate when each factor is present (colored) vs.&nbsp;absent (gray), all crashes and rural crashes.
+</figcaption>
+</figure>
+</div>
+<p><strong>How rural crashes differ.</strong> Deer strikes are four times as common in rural crashes (16% vs.&nbsp;4%), and none of the 49 was severe. Non-collision events are 2.8× as common. Rear-end and distraction crashes are about half as common, which helps explain the higher rural severe rate (6.2% vs.&nbsp;5.0%). The main risk factors (aggressive driving, impairment, speeding, drivers aged 75+) occur about as often on rural roads as elsewhere.</p>
+<p><strong>Why darkness looks protective.</strong> First principles say darkness should <em>raise</em> severity, yet dark crashes were severe less often (3.1% vs.&nbsp;6.0%). The crash mix explains it: motorcycle crashes happen almost entirely in daylight (4.5% of daylight crashes vs.&nbsp;0.7% of dark ones), and dark crashes are twice as often deer strikes. Darkness is a useful <em>predictor</em> here, but the association is not causal.</p>
+</section>
+<section id="the-final-model" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="the-final-model"><span class="header-section-number">4.5</span> The final model</h2>
+<p><strong>Model.</strong> Logistic regression on the ten features, with mean imputation and standardization learned inside each training fold, balanced class weights and a mild L2 penalty. The penalty is needed because three features have zero severe crashes, which would push unpenalized coefficients to −∞ (complete separation; <span class="citation" data-cites="firth1993">Firth (<a href="#ref-firth1993" role="doc-biblioref">1993</a>)</span> discusses penalized alternatives).</p>
+<p><strong>Threshold.</strong> The probability cut-off is tuned to maximize F1, where <span class="math inline">\(F_1 = 2\,\text{precision}\cdot\text{recall}/(\text{precision}+\text{recall})\)</span>. It is chosen by an inner cross-validation within each training fold, so the test fold never influences it (median threshold 0.75).</p>
+<p><strong>Evaluation.</strong> Stratified 5-fold cross-validation repeated 20 times (100 test folds), reported for all crashes and for rural crashes alone.</p>
+<div id="tbl-final-perf" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-final-perf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9: Final model, cross-validated means over 100 test folds
+</figcaption>
+<div aria-describedby="tbl-final-perf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scope</th>
+<th>Accuracy</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1</th>
+<th>ROC AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>All crashes</td>
+<td><p>0.900</p></td>
+<td><p>0.228</p></td>
+<td><p>0.284</p></td>
+<td><p>0.225</p></td>
+<td><p>0.761</p></td>
+</tr>
+<tr class="even">
+<td>Rural crashes</td>
+<td><p>0.898</p></td>
+<td><p>0.322</p></td>
+<td><p>0.413</p></td>
+<td><p>0.304</p></td>
+<td><p>0.841</p></td>
+</tr>
+<tr class="odd">
+<td><em>Always “not severe”</em></td>
+<td><em>0.947</em></td>
+<td><em>0</em></td>
+<td><em>0</em></td>
+<td><em>0</em></td>
+<td><em>0.500</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Accuracy is the wrong yardstick for a 5% outcome <span class="citation" data-cites="saito2015">(<a href="#ref-saito2015" role="doc-biblioref">Saito and Rehmsmeier 2015</a>)</span>. The trivial model scores 94.7% and finds nothing. Our model gives up some accuracy to catch about 28% of severe crashes overall and 41% on rural roads. Roughly one in four of its “severe” flags is correct, 4–5× the base rate. It ranks crashes well, especially rural ones (AUC 0.84). Rural metrics are noisy: each rural test fold holds only about two severe crashes (F1 sd ≈ 0.25).</p>
+<div id="fig-confusion" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-confusion.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: Confusion matrices: every crash scored once by a model that never saw it.
+</figcaption>
+</figure>
+</div>
+<div id="fig-curves" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-curves.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13: ROC and precision–recall curves, and the precision/recall/F1 trade-off across thresholds.
+</figcaption>
+</figure>
+</div>
+<p><strong>Is this the best ten?</strong> Under the same folds, the selected ten outperform every alternative tested:</p>
+<div id="tbl-alts" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-alts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;10: Selected model vs.&nbsp;alternatives
+</figcaption>
+<div aria-describedby="tbl-alts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Feature set</th>
+<th>F1 (all)</th>
+<th>F1 (rural)</th>
+<th>AUC (all)</th>
+<th>AUC (rural)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>All 73 candidates</td>
+<td>0.111</td>
+<td>0.143</td>
+<td>0.645</td>
+<td>0.751</td>
+</tr>
+<tr class="even">
+<td>Top 10 by p-value only</td>
+<td>0.159</td>
+<td>0.208</td>
+<td>0.709</td>
+<td>0.780</td>
+</tr>
+<tr class="odd">
+<td>Selected ten, darkness → left turn</td>
+<td>0.201</td>
+<td>0.239</td>
+<td>0.741</td>
+<td>0.789</td>
+</tr>
+<tr class="even">
+<td><strong>Selected ten</strong></td>
+<td><strong>0.225</strong></td>
+<td><strong>0.304</strong></td>
+<td><strong>0.761</strong></td>
+<td><strong>0.841</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The selection used the full dataset, so the selected model’s scores are slightly optimistic for new data.</p>
+</section>
+<section id="which-factors-matter-most-on-rural-roads" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="which-factors-matter-most-on-rural-roads"><span class="header-section-number">4.6</span> Which factors matter most on rural roads?</h2>
+<p>For interpretation, the ten-feature model is refitted on all crashes without class weights, keeping the mild penalty. 95% intervals come from 1,000 bootstrap resamples (<a href="#fig-or" class="quarto-xref">Figure&nbsp;14</a>). For the three zero-severe flags, the <em>direction</em> is certain (no resample puts them above 1), but their <em>size</em> is set mostly by the penalty.</p>
+<div id="fig-or" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-or-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-odds-ratios.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-or-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14: Odds ratios with 95% bootstrap intervals.
+</figcaption>
+</figure>
+</div>
+<p>How much a factor contributes to rural severe crashes depends on its odds ratio <strong>and</strong> on how often it occurs. The population attributable fraction <span class="citation" data-cites="miettinen1974">(<a href="#ref-miettinen1974" role="doc-biblioref">Miettinen 1974</a>)</span> among the severe rural cases is <span class="math display">\[
+\text{PAF} = p_c \,\frac{\text{OR} - 1}{\text{OR}},
+\]</span> where <span class="math inline">\(p_c\)</span> is the share of severe rural crashes with the factor.</p>
+<div id="fig-paf" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-paf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="assets/figures/fig-rs-paf.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-paf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15: Estimated share of severe rural crashes attributable to each risk factor.
+</figcaption>
+</figure>
+</div>
+<ol type="1">
+<li><strong>Aggressive driving contributes the most.</strong> It appears in about half of rural crashes and in 9 of the 11 severe ones, accounting for roughly a third of them (PAF ≈ 36%), despite a moderate odds ratio of 1.8.</li>
+<li><strong>Motorcycles are the most dangerous single factor</strong> (OR ≈ 4.6, 95% CI 1.6–10.6), the only factor whose interval clearly excludes no effect.</li>
+<li><strong>Impairment and speeding</strong> each raise the odds about 2.4× and account for about 10% of severe rural crashes each.</li>
+<li><strong>Drivers aged 75+ and non-collision events</strong> each raise the odds about 1.8×. Non-collision events are 2.8× more common on rural roads.</li>
+<li><strong>Low-risk rural crashes</strong> are deer strikes (common, never severe), and rear-end and distraction crashes (mostly non-rural).</li>
+</ol>
+</section>
+</section>
+<section id="discussion-and-limitations" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Discussion and limitations</h1>
+<ul>
+<li><strong>Few severe crashes.</strong> There are 36 in total and 11 on rural roads. Only <code>MOTORCYCLE</code> has an interval that clearly excludes no effect. <code>AGGRESSIVE_DRIVING</code> and <code>IMPAIRED_DRIVER</code> are borderline.</li>
+<li><strong>Duplicates also affect Part I.</strong> The MAR and MNAR files are row-for-row copies of the first 1,000 rows of <code>features.xls</code>, so they contain the same duplicated crashes. Their cross-validated scores are likely inflated, because copies of one crash can fall in both training and test folds. The comparison <em>between</em> treatments is still fair, since every treatment shares the problem.</li>
+<li><strong>Association, not causation</strong>, especially for darkness and the zero-severe flags.</li>
+<li><strong>Missing variables.</strong> The extract lacks seat-belt use, curvature, undivided two-lane head-on risk and distance to trauma care, all central to rural severity.</li>
+<li><strong>Slight optimism.</strong> The features were selected on the full dataset.</li>
+<li><strong>Origin of the missingness.</strong> In <code>features.xls</code>, about 16 unrelated columns each have 200–260 gaps, while most have none. This pattern suggests the missingness was introduced for the exercise. Real PennDOT flags such as <code>WET_ROAD</code> are calculated fields, not hand-entered.</li>
+</ul>
+</section>
+<section id="conclusion" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Conclusion</h1>
+<p>How missing data are handled changes the model. Complete-case removal, the default in most software, was the most biased choice and was worst when data were missing not at random. Simple imputation was less biased, and recovering values from source fields was better still. For rural crash severity, a small, mechanism-driven feature set outperformed both a purely statistical selection and the full feature set. It points to aggressive driving, motorcycles, impairment and speeding as the levers that matter most on rural roads. Confirming these findings requires multi-year PennDOT data, with thousands of severe rural crashes, and the missing safety variables listed above.</p>
+</section>
+<section id="references" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-vanbuuren2011" class="csl-entry" role="listitem">
+Buuren, Stef van, and Karin Groothuis-Oudshoorn. 2011. <span>“Mice: Multivariate Imputation by Chained Equations in <span>R</span>.”</span> <em>Journal of Statistical Software</em> 45 (3): 1–67.
+</div>
+<div id="ref-firth1993" class="csl-entry" role="listitem">
+Firth, David. 1993. <span>“Bias Reduction of Maximum Likelihood Estimates.”</span> <em>Biometrika</em> 80 (1): 27–38.
+</div>
+<div id="ref-fisher1922" class="csl-entry" role="listitem">
+Fisher, Ronald A. 1922. <span>“On the Interpretation of <span class="math inline">\(\chi^2\)</span> from Contingency Tables, and the Calculation of <span>P</span>.”</span> <em>Journal of the Royal Statistical Society</em> 85 (1): 87–94.
+</div>
+<div id="ref-hosmer2013" class="csl-entry" role="listitem">
+Hosmer, David W., Stanley Lemeshow, and Rodney X. Sturdivant. 2013. <em>Applied Logistic Regression</em>. 3rd ed. Hoboken, NJ: Wiley.
+</div>
+<div id="ref-littlerubin2019" class="csl-entry" role="listitem">
+Little, Roderick J. A., and Donald B. Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. 3rd ed. Hoboken, NJ: Wiley.
+</div>
+<div id="ref-mann1947" class="csl-entry" role="listitem">
+Mann, Henry B., and Donald R. Whitney. 1947. <span>“On a Test of Whether One of Two Random Variables Is Stochastically Larger Than the Other.”</span> <em>The Annals of Mathematical Statistics</em> 18 (1): 50–60.
+</div>
+<div id="ref-miettinen1974" class="csl-entry" role="listitem">
+Miettinen, Olli S. 1974. <span>“Proportion of Disease Caused or Prevented by a Given Exposure, Trait or Intervention.”</span> <em>American Journal of Epidemiology</em> 99 (5): 325–32.
+</div>
+<div id="ref-peduzzi1996" class="csl-entry" role="listitem">
+Peduzzi, Peter, John Concato, Elizabeth Kemper, Theodore R. Holford, and Alvan R. Feinstein. 1996. <span>“A Simulation Study of the Number of Events Per Variable in Logistic Regression Analysis.”</span> <em>Journal of Clinical Epidemiology</em> 49 (12): 1373–79.
+</div>
+<div id="ref-penndot2026" class="csl-entry" role="listitem">
+Pennsylvania Department of Transportation. 2026. <span>“<span>PennDOT</span> Open Data Portal: Crash Data Dictionary and Field Constraints Tables.”</span>
+</div>
+<div id="ref-rubin1976" class="csl-entry" role="listitem">
+Rubin, Donald B. 1976. <span>“Inference and Missing Data.”</span> <em>Biometrika</em> 63 (3): 581–92.
+</div>
+<div id="ref-saito2015" class="csl-entry" role="listitem">
+Saito, Takaya, and Marc Rehmsmeier. 2015. <span>“The Precision-Recall Plot Is More Informative Than the <span>ROC</span> Plot When Evaluating Binary Classifiers on Imbalanced Datasets.”</span> <em>PLoS ONE</em> 10 (3): e0118432.
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jonathanwilsonami\.github\.io\/crash-missing-data-bias\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Data: Pennsylvania Department of Transportation (PennDOT) crash records.</p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jonathanwilsonami/crash-missing-data-bias/blob/main/paper.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/jonathanwilsonami/crash-missing-data-bias/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

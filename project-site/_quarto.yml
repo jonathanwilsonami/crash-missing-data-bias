@@ -1,0 +1,43 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - index.qmd
+    - paper.qmd
+  resources:
+    - notebook-missing-data.html
+    - notebook-rural-model.html
+
+website:
+  title: "PA Crash Severity & Missing Data"
+  site-url: https://jonathanwilsonami.github.io/crash-missing-data-bias/
+  repo-url: https://github.com/jonathanwilsonami/crash-missing-data-bias
+  repo-actions: [source, issue]
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: paper.qmd
+        text: Paper
+      - href: paper-slides.html
+        text: Slides
+      - text: Notebooks
+        menu:
+          - href: notebook-missing-data.html
+            text: "Part I: Missing-data treatments"
+          - href: notebook-rural-model.html
+            text: "Part II: Rural severity model"
+    right:
+      - icon: github
+        href: https://github.com/jonathanwilsonami/crash-missing-data-bias
+  page-footer:
+    center: "Data: Pennsylvania Department of Transportation (PennDOT) crash records."
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    number-sections: false
+
+bibliography: references.bib
